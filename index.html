@@ -343,7 +343,8 @@ function enregistrerEffet(effet) { EFFET = effet; }
    Étape 5 (2026-10-20) : NOUVEAU LOGO (logo-v7, variante M) : le mim d'A5 · P5 rogné par l'étoile E1, détourée d'un fin trait
    de métal, avec un point au centre ; la caméra entre toujours au centre de l'étoile. La version précédente : tag site-mansur-v1.
    Étape 6 (2026-10-21, retours des testeurs) : trophée Valorant, Premier « à chaque acte » (6 par an), bandes croisées entre
-   les sections 04, 05, 06 et la fin, menu sans glissade, animations du maillot en pause quand il n'est pas à l'écran.
+   05 et 06 (gardées pour « Devenez partenaire » seulement), « le mot qui recule » vers 05, « le trait qui dessine » vers la fin,
+   menu sans glissade, animations du maillot en pause quand il n'est pas à l'écran.
    Les autres sections suivront, une par une.
    Base reprise du Site MANSUR : maquette du site one page du club, carte blanche de Duncan, pensée pour le thème Améthyste.
    Ordre de la page : hero (logo E1 · P2 Détail), l'équipe (copie de Labo - JOUEURS), planning de la saison Premier,
@@ -1710,6 +1711,22 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
   background: linear-gradient(90deg, var(--metal-sombre), var(--metal-clair) 30%, var(--metal-reflet) 50%, var(--metal-clair) 70%, var(--metal-sombre)); box-shadow: 0 18px 40px -20px var(--couleur-nuit); }
 .sd-bande-ruban--violet { color: var(--couleur-texte); background: var(--couleur-surface); transform: translateY(-50%) rotate(3deg); z-index: -1; }
 .sd-bande-ruban--violet i { color: var(--metal-clair); }
+/* ---- Le mot qui recule (vers 05) : une scène d'un écran qui reste en place pendant 0,8 écran de défilement. Le mot, en
+   lettres évidées trois fois trop grand, recule jusqu'à sa taille ; sa copie pleine (métal) apparaît à l'arrivée. Mode calme : posé. ---- */
+.sd-recul { position: relative; height: calc(var(--h) * 1.8); background: var(--couleur-fond); }
+.sd-recul-scene { position: sticky; top: 0; height: var(--h); display: grid; place-items: center; overflow: hidden; }
+.sd-recul-mot { position: relative; margin: 0; white-space: nowrap; will-change: transform; transform: scale(var(--sd-recul-echelle, 1));
+  font: 900 clamp(64px, 13vw, 220px)/1 var(--police-titre, sans-serif); text-transform: uppercase; letter-spacing: .01em; }
+.sd-recul-trait { color: transparent; -webkit-text-stroke: 2px var(--metal-clair); }
+.sd-recul-plein { position: absolute; inset: 0; opacity: var(--sd-recul-plein, 1);
+  background: linear-gradient(180deg, var(--metal-reflet), var(--metal-clair) 45%, var(--metal-sombre)); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.sd-scene[data-calme] .sd-recul { height: auto; padding: 12vh 0; }
+.sd-scene[data-calme] .sd-recul-scene { position: static; height: auto; }
+/* ---- Le trait qui dessine (vers la fin) : le contour de l'encadré se trace ; le logo s'allume quand le tour se ferme. ---- */
+.sd-final-trait { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.sd-final-trait rect { x: 1.5px; y: 1.5px; width: calc(100% - 3px); height: calc(100% - 3px); rx: 27px; fill: none; stroke: url(#sd-final-fil); stroke-width: 2.5;
+  stroke-dasharray: 1; stroke-dashoffset: var(--sd-trace, 0); }
+.sd-final-etoile { opacity: calc(.04 + .14 * var(--sd-allume, 1)); }
 .sd-scene[data-calme] .sd-canal-live i { animation: none; }
 .sd-scene[data-calme] .sd-canal, .sd-scene[data-calme] .sd-canal::after, .sd-scene[data-calme] .sd-lien, .sd-scene[data-calme] .sd-lien-fort { transition: none; }
 `,
@@ -1883,9 +1900,8 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
             '<p><em>Playoffs.</em> ' + saison.semaines[6].note + ' Quart à 19h et demi à 21h le samedi, finale à 19h le dimanche.</p></div>' +
         '</div>' +
       '</div></section>' +
-      // BANDES (entre 04 et 05)
-      '<div class="sd-bande" aria-hidden="true"><div class="sd-bande-ruban sd-bande-ruban--metal"><span>' + 'Rejoindre MANSUR <i>✦</i> '.repeat(10) + '</span></div>' +
-        '<div class="sd-bande-ruban sd-bande-ruban--violet"><span>' + 'Recrutement ouvert <i>✦</i> '.repeat(10) + '</span></div></div>' +
+      // LE MOT QUI RECULE (entre 04 et 05) : la page s'arrête sur un mot géant, qui recule jusqu'à sa taille et se remplit de métal.
+      '<div class="sd-recul" aria-hidden="true"><div class="sd-recul-scene"><p class="sd-recul-mot"><span class="sd-recul-trait">On recrute</span><span class="sd-recul-plein">On recrute</span></p></div></div>' +
       // RECRUTEMENT
       '<section class="sd-section sd-section--lueur" data-section="recrutement"><div class="sd-cadre">' +
         entete('05', 'Recrutement', 'Rejoindre MANSUR', 'Le club grandit. Joueurs, staff ou créateurs : si tu veux porter le maillot, voici comment candidater.') +
@@ -1918,12 +1934,12 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
         '<div class="sd-emplacements">' + [0, 1, 2, 3].map(k => '<div class="sd-emplacement sd-revele sd-lumiere" style="--k:' + k + '">Votre logo</div>').join('') + '</div>' +
         '<div class="sd-actions sd-revele">' + lienClub(liens.contact, 'sd-bouton', 'Recevoir le dossier partenaire') + lienClub(liens.discord, 'sd-bouton sd-bouton--contour', iconeTrait('discord') + 'Nous écrire sur Discord') + '</div>' +
       '</div></section>' +
-      // BANDES (entre 06 et la fin)
-      '<div class="sd-bande" aria-hidden="true"><div class="sd-bande-ruban sd-bande-ruban--metal"><span>' + 'Rejoins la communauté <i>✦</i> '.repeat(10) + '</span></div>' +
-        '<div class="sd-bande-ruban sd-bande-ruban--violet"><span>' + 'Le Discord du club <i>✦</i> '.repeat(10) + '</span></div></div>' +
       // LE GRAND APPEL, PUIS LE PIED DE PAGE
       '<section class="sd-section" data-section="contact"><div class="sd-cadre">' +
         '<div class="sd-final sd-revele">' + etoileLogo('sd-final-or', 'sd-final-etoile') +
+          // Le trait qui dessine : un fil de métal fait le tour de l'encadré au rythme du défilement (pathLength = 1 : 0 → 1 = le tour).
+          '<svg class="sd-final-trait" aria-hidden="true"><defs><linearGradient id="sd-final-fil" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--metal-reflet)"/><stop offset=".5" style="stop-color:var(--metal-clair)"/><stop offset="1" style="stop-color:var(--metal-sombre)"/></linearGradient></defs>' +
+            '<rect width="100%" height="100%" pathLength="1"/></svg>' +
           '<p class="sd-sur-titre">Communauté</p><h2 class="sd-titre">Rejoins la communauté</h2>' +
           '<p class="sd-intro">Annonces de match, soirées de visionnage, recrutement : tout se passe sur le Discord du club.</p>' +
           lienClub(liens.discord, 'sd-bouton', iconeTrait('discord') + 'Rejoindre le Discord') +
@@ -3122,6 +3138,8 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
         g.c.setAttribute('opacity', (vie * (0.5 + g.vitesse * 0.5)).toFixed(3));
       }
     }
+    const recul = scene.querySelector('.sd-recul'), encadreFinal = scene.querySelector('.sd-final');
+    const hautDansLaPage = el => { let t = 0; for (let e = el; e && e !== defilement; e = e.offsetParent) t += e.offsetTop; return t; }; // position dans la page défilante
     const bandes = [...scene.querySelectorAll('.sd-bande')], rubansBandes = bandes.map(b => [...b.querySelectorAll('.sd-bande-ruban')]);
     function majNav() {
       const y = defilement.scrollTop, max = Math.max(1, defilement.scrollHeight - defilement.clientHeight);
@@ -3130,6 +3148,10 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       const maillotCache = y < debutHero() - defilement.clientHeight || y > debutHero() + sectionHero.offsetHeight;
       const h = defilement.clientHeight;
       const positionsBandes = bandes.map(b => (y + h - b.offsetTop) / (h + b.offsetHeight));
+      // Le mot qui recule : 0 quand sa scène se fixe en haut de l'écran, 1 quand elle repart.
+      const reculP = recul ? Math.min(1, Math.max(0, (y - recul.offsetTop) / Math.max(1, recul.offsetHeight - h))) : 0;
+      // Le trait qui dessine : 0 quand l'encadré entre par le bas, 1 quand il est aux deux tiers de l'écran.
+      const finalP = encadreFinal ? Math.min(1, Math.max(0, (y + h - hautDansLaPage(encadreFinal)) / (h * 0.75))) : 0;
       const courante = sectionCourante();
       poser(nav, '--sd-nav-progression', (y / max).toFixed(3));
       if (nav.dataset.haut !== (y < 40 ? 'oui' : 'non')) nav.dataset.haut = y < 40 ? 'oui' : 'non';
@@ -3143,6 +3165,15 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
         metal.style.transform = 'translateY(-50%) rotate(-3.5deg) translateX(' + ((0.5 - p) * 22).toFixed(2) + '%)';
         violet.style.transform = 'translateY(-50%) rotate(3deg) translateX(' + ((p - 0.5) * 22).toFixed(2) + '%)';
       });
+      if (!calme && recul) {
+        const e = 1 - Math.pow(1 - reculP, 3); // recule vite, se pose en douceur
+        poser(recul, '--sd-recul-echelle', (3.2 - 2.2 * e).toFixed(3));
+        poser(recul, '--sd-recul-plein', Math.min(1, Math.max(0, (reculP - 0.55) / 0.35)).toFixed(3));
+      }
+      if (!calme && encadreFinal) {
+        poser(encadreFinal, '--sd-trace', (1 - finalP).toFixed(3));
+        poser(encadreFinal, '--sd-allume', Math.min(1, Math.max(0, (finalP - 0.85) / 0.15)).toFixed(3));
+      }
       if (courante === sectionActive) return;
       sectionActive = courante;
       nav.querySelectorAll('[data-cible]').forEach(a => { a.classList.toggle('actif', a.dataset.cible === courante); if (a.dataset.cible === courante) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
