@@ -344,7 +344,7 @@ function enregistrerEffet(effet) { EFFET = effet; }
    de métal, avec un point au centre ; la caméra entre toujours au centre de l'étoile. La version précédente : tag site-mansur-v1.
    Étape 6 (2026-10-21, retours des testeurs) : trophée Valorant, Premier « à chaque acte » (6 par an), bandes croisées entre
    05 et 06 (gardées pour « Devenez partenaire » seulement), « le mot qui recule » vers 05, « le trait qui dessine » vers la fin,
-   menu sans glissade, animations du maillot en pause quand il n'est pas à l'écran.
+   menu sans glissade, niveau « allégé » complété pour les machines sans carte graphique (voir QUALITÉ), animations du maillot en pause quand il n'est pas à l'écran.
    Les autres sections suivront, une par une.
    Base reprise du Site MANSUR : maquette du site one page du club, carte blanche de Duncan, pensée pour le thème Améthyste.
    Ordre de la page : hero (logo E1 · P2 Détail), l'équipe (copie de Labo - JOUEURS), planning de la saison Premier,
@@ -1151,6 +1151,14 @@ const EffetSiteMansurDA = {
 html[data-qualite="allege"] .sd-plis, html[data-qualite="minimal"] .sd-plis { display: none; }
 html[data-qualite="allege"] .sd-imprime, html[data-qualite="minimal"] .sd-imprime { animation: none; }
 html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .sd-dos::before { display: none; }
+/* (2026-10-21, retours des testeurs) Sans carte graphique, le maillot tombait à 14 images/s en 1080p et 9 en 1440p : c'est
+   l'ACCUMULATION des calques qui bougent en continu (vent, flottement, boucles des cartes, dessin du col redessiné à chaque
+   image). Mesuré avec outils/captures/mesure-arret.mjs : en coupant ces boucles (le col n'est plus redessiné qu'en défilant,
+   voir « toileFixe » dans le code), 60 images/s en 1080p et 57 en 1440p ; la découpe en V et le motif restent. */
+html[data-qualite="allege"] .sdj-flotte, html[data-qualite="allege"] .sdj-brillance, html[data-qualite="allege"] .sdj-contour, html[data-qualite="allege"] .sdj-pivot,
+html[data-qualite="allege"] .sdj-curseur, html[data-qualite="allege"] .sdj-curseur *,
+html[data-qualite="minimal"] .sdj-flotte, html[data-qualite="minimal"] .sdj-brillance, html[data-qualite="minimal"] .sdj-contour, html[data-qualite="minimal"] .sdj-pivot,
+html[data-qualite="minimal"] .sdj-curseur, html[data-qualite="minimal"] .sdj-curseur * { animation: none !important; }
 .sd-scene[data-calme] .sdj-curseur svg { animation: none; }
 .sd-scene[data-calme] .sdj-curseur i { display: none; }
 .sd-scene[data-calme] .sdj-curseur .bouton { animation: none; opacity: .95; }
@@ -1744,6 +1752,10 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
     // fait monter le maillot jusqu'aux joueurs. Ce qui change : le tissu monte à la vitesse exacte du défilement (ni ressort ni
     // parallaxe), plus de mouvements décoratifs en boucle, et les changements d'état sont instantanés (convention « durée zéro »).
     const calme = options.reduireAnimations;
+    // QUALITÉ (moteur/qualite.js) : au niveau « allégé » ou « minimal », le dessin du col n'est plus redessiné à chaque image
+    // (seulement quand on défile) : sans carte graphique, c'était l'un des plus gros coûts du maillot.
+    let qualite = options.qualite || 'complet';
+    const toileFixe = () => calme || qualite !== 'complet';
     const scene = document.createElement('div');
     scene.className = 'sd-scene';
     if (calme) scene.dataset.calme = '1';
@@ -2186,7 +2198,7 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       creerPoussiere();
       scene.style.setProperty('--sd-coule', Math.round(defilement.clientHeight * 0.75) + 'px'); // le tissu qui continue sous l'équipe
       placerZoneCartes(hauteurDos);
-      if (calme) dessiner(0); // mode calme : pas de boucle d'animation, on redessine seulement quand la taille ou les réglages changent
+      if (toileFixe()) dessiner(0); // mode calme ou qualité allégée : pas de boucle d'animation, on redessine seulement quand la taille ou les réglages changent
     }
 
     // La zone des cartes : sous la nuque, jusqu'à l'ourlet. « largeurCarte » est la taille d'une carte à pleine taille
@@ -2799,7 +2811,7 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       ctx.globalCompositeOperation = 'lighter';
 
       // Poussière d'or : monte lentement en scintillant (dessinée sous le V, qui la recouvre en descendant).
-      for (const g of (calme ? [] : poussieres)) { // mode calme : pas de poussière d'or qui monte
+      for (const g of (toileFixe() ? [] : poussieres)) { // mode calme : pas de poussière d'or qui monte
         g.y -= g.vy; if (g.y < -4) { g.y = hauteur + 4; g.x = Math.random() * largeur; }
         ctx.globalAlpha = 0.25 + 0.35 * (0.5 + 0.5 * Math.sin(temps / 600 + g.phase));
         ctx.fillStyle = or.clair;
@@ -2831,7 +2843,7 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
         }
 
         // 2. Le V : un dégradé d'or dont le point le plus clair glisse le long des bras (l'or « luit »).
-        const balayage = calme ? 0.5 : ((temps / 1800) % 1.6) - 0.3; // mode calme : le reflet reste posé au milieu du V
+        const balayage = toileFixe() ? 0.5 : ((temps / 1800) % 1.6) - 0.3; // mode calme : le reflet reste posé au milieu du V
         const borne = v => Math.min(1, Math.max(0, v));
         const degrade = ctx.createLinearGradient(0, 0, largeur, 0);
         degrade.addColorStop(0, or.sombre);
@@ -2867,7 +2879,7 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
         }
 
         // 4. Étincelles : un débit régulier (un peu plus fort quand le V bouge), réparties uniformément le long du V.
-        if (p < 1 && r.etincelles > 0 && !calme) {
+        if (p < 1 && r.etincelles > 0 && !toileFixe()) {
           resteEmission += r.etincelles * 2 * (0.6 + Math.min(1, vitesse * 150));
           while (resteEmission >= 1 && etincelles.length < 500) {
             resteEmission -= 1;
@@ -2911,11 +2923,11 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
 
     function boucle(temps) {
       idImage = 0;
-      if (!visible || calme) return;
+      if (!visible || toileFixe()) return;
       dessiner(temps);
       idImage = requestAnimationFrame(boucle);
     }
-    const demarrer = () => { if (!idImage && visible && !calme) idImage = requestAnimationFrame(boucle); };
+    const demarrer = () => { if (!idImage && visible && !toileFixe()) idImage = requestAnimationFrame(boucle); };
     // Mode calme : pas de boucle permanente (rien ne bouge tout seul) ; on redessine une fois par image, seulement quand on défile.
     let idCalme = 0, dernierTempsCalme = 0;
     function boucleCalme(temps) {
@@ -2924,7 +2936,8 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       // On continue seulement tant que le V n'a pas rattrapé le défilement (environ 0,2 s après un cran), puis tout s'arrête.
       if (pLisse !== progression() * progressionArret()) idCalme = requestAnimationFrame(boucleCalme);
     }
-    if (calme) defilement.addEventListener('scroll', () => {
+    defilement.addEventListener('scroll', () => {
+      if (!toileFixe()) return;
       if (!idCalme) { dernierTempsCalme = performance.now(); idCalme = requestAnimationFrame(boucleCalme); }
     }, { passive: true });
 
@@ -3347,6 +3360,10 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
     function arreterNav() { observateurVedette.disconnect(); observateurNav.disconnect(); observateurRevele.disconnect(); cancelAnimationFrame(idMiseEnPageNav); clearInterval(minuterieMatch); cancelAnimationFrame(idGlisse); cancelAnimationFrame(idPortail); cancelAnimationFrame(idMolette); minuteriesPret.forEach(clearTimeout); }
 
     return {
+      changerQualite(niveau) {
+        qualite = niveau;
+        if (toileFixe()) { cancelAnimationFrame(idImage); idImage = 0; dessiner(performance.now()); } else demarrer();
+      },
       mettreAJour(nouveaux) {
         const p = progressionTotale();
         r = { ...nouveaux };
@@ -3389,8 +3406,8 @@ enregistrerEffet(EffetSiteMansurDA);
   const zone = document.getElementById('site');
   const reglages = Object.fromEntries(EFFET.parametres.map(p => [p.id, p.defaut]));
   // Comme dans le lab (choix de Duncan, 2026-10-15) : la maquette s'ouvre toujours en version complète, même si le système
-  // demande moins d'animations (sinon, sur un Windows réglé ainsi, toutes les animations disparaissent), et au niveau de
-  // qualité « complet » (pas d'allègement automatique).
+  // demande moins d'animations (sinon, sur un Windows réglé ainsi, toutes les animations disparaissent). La qualité, elle,
+  // s'adapte à la machine (voir plus bas).
   const calme = false;
   let instance = null;
   // L'effet lit les couleurs du thème au montage : changer de thème = le remonter, en gardant la position dans la page.
@@ -3410,8 +3427,12 @@ enregistrerEffet(EffetSiteMansurDA);
     info.insertBefore(choix, info.querySelector('.sd-nav-reseaux'));
   }
   Qualite.surChangement(niveau => { if (instance && instance.changerQualite) instance.changerQualite(niveau); });
+  // La qualité est AUTOMATIQUE (2026-10-21) : sur une machine dont le navigateur dessine sans la carte graphique (souvent
+  // après des « optimisations » de Windows), le site passe seul en « allégé » ; ailleurs il reste complet. Une adresse en
+  // ?qualite=complet (ou allege, minimal) impose un niveau, pour comparer.
   Qualite.demarrer();
-  Qualite.choisir('complet');
+  const qualiteImposee = new URLSearchParams(location.search).get('qualite');
+  if (Qualite.NIVEAUX.includes(qualiteImposee)) Qualite.choisir(qualiteImposee);
   monter(THEMES[0][0]);
   if (new URLSearchParams(location.search).has('diag')) diagnostic();
 
@@ -3454,6 +3475,7 @@ enregistrerEffet(EffetSiteMansurDA);
         'Écran : ' + screen.width + ' × ' + screen.height + ' · zoom / échelle : ' + devicePixelRatio + ' · fenêtre : ' + innerWidth + ' × ' + innerHeight,
         'Fréquence d’affichage estimée : ' + (median ? Math.round(1000 / median) : '?') + ' Hz',
         'Windows demande moins d’animations : ' + (matchMedia('(prefers-reduced-motion: reduce)').matches ? 'oui' : 'non') + ' · thème : ' + document.documentElement.dataset.theme,
+        'Niveau de qualité choisi par le site : ' + Qualite.niveau + ' (' + (Qualite.rapport().raison || '') + ')',
         '', 'FLUIDITÉ PAR SECTION :'];
       for (const [s, a] of Object.entries(mesures)) if (a.length > 20) lignes.push('  ' + s + ' : ' + stats(a));
       if (toutes.length > 20) lignes.push('', 'ENSEMBLE : ' + stats(toutes));
