@@ -3421,7 +3421,7 @@ enregistrerEffet(EffetSiteMansurDA);
     const panneau = document.createElement('div');
     panneau.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:99;max-width:min(560px,calc(100vw - 24px));padding:12px 14px;border-radius:10px;font:13px/1.45 system-ui,sans-serif;color:#fff;background:rgba(0,0,0,.82);box-shadow:0 8px 30px rgba(0,0,0,.5)';
     panneau.innerHTML = '<b>Diagnostic de fluidité</b> · <span data-direct>…</span><br>' +
-      '<button data-auto>Lancer le test automatique (40 s)</button> <button data-copier disabled>Copier le rapport</button> <button data-txt disabled>Télécharger le .txt</button>' +
+      '<button data-auto>Lancer le test automatique (40 s)</button> <button data-maillot>Tester le maillot (40 s)</button> <button data-copier disabled>Copier le rapport</button> <button data-txt disabled>Télécharger le .txt</button>' +
       '<pre data-rapport style="display:none;max-height:40vh;overflow:auto;margin:10px 0 0;white-space:pre-wrap;font:12px/1.4 ui-monospace,Consolas,monospace"></pre>';
     panneau.querySelectorAll('button').forEach(b => b.style.cssText = 'margin-top:8px;padding:6px 10px;border:0;border-radius:6px;cursor:pointer;font:600 12px system-ui;color:#000;background:#E2C24E');
     document.body.appendChild(panneau);
@@ -3457,6 +3457,7 @@ enregistrerEffet(EffetSiteMansurDA);
         '', 'FLUIDITÉ PAR SECTION :'];
       for (const [s, a] of Object.entries(mesures)) if (a.length > 20) lignes.push('  ' + s + ' : ' + stats(a));
       if (toutes.length > 20) lignes.push('', 'ENSEMBLE : ' + stats(toutes));
+      if (elimination.length) lignes.push('', 'TEST DU MAILLOT (à l’arrêt, un élément coupé à la fois) :', ...elimination.map(e => '  ' + e));
       return lignes.join(String.fromCharCode(10)); // retour à la ligne (ce code est écrit dans un gabarit de texte)
     }
     function afficher() {
@@ -3470,6 +3471,38 @@ enregistrerEffet(EffetSiteMansurDA);
       d.scrollTop = 0;
       const pas = t => { const k = Math.min(1, (t - t0) / 40000); d.scrollTop = k * max; if (k < 1) requestAnimationFrame(pas); else afficher(); };
       requestAnimationFrame(pas);
+    });
+    // LE TEST DU MAILLOT, par élimination : la page s'arrête sur l'équipe ; on mesure 3 s avec tout, puis en coupant un
+    // élément à la fois. L'élément dont l'absence fait remonter les images/s est le coupable sur cette machine.
+    const VARIANTES = [
+      ['tout (référence)', ''],
+      ['sans les plis (le vent)', '.sd-plis { display: none !important; }'],
+      ['sans le flottement de l’impression', '.sd-imprime { animation: none !important; }'],
+      ['sans le motif d’étoiles', '.sd-imprime::before { display: none !important; }'],
+      ['sans le dessin du col (canvas)', '.sd-toile { display: none !important; }'],
+      ['sans les animations des cartes', '.sdj-zone *, .sdj-zone *::before, .sdj-zone *::after { animation: none !important; }'],
+      ['sans la découpe en V', '.sd-tissu { clip-path: none !important; }'],
+      ['sans le tissu qui continue', '.sd-etage { height: var(--h) !important; } .sd-tissu { height: calc(var(--h) + var(--montee) + var(--marge)) !important; }'],
+      ['tout coupé', '.sd-plis, .sd-toile, .sd-imprime::before { display: none !important; } .sd-imprime, .sdj-zone *, .sdj-zone *::before, .sdj-zone *::after { animation: none !important; } .sd-tissu { clip-path: none !important; }']
+    ];
+    const elimination = [];
+    const attendre = ms => new Promise(r => setTimeout(r, ms));
+    const mesurer3s = () => new Promise(r => { const dts = []; let p = performance.now(), fin = p + 3000;
+      const pas = t => { dts.push(t - p); p = t; if (t < fin) requestAnimationFrame(pas); else { dts.shift(); dts.sort((a, b) => a - b); const m = dts.reduce((s, v) => s + v, 0) / dts.length; r(Math.round(1000 / m) + ' images/s (95 % en moins de ' + dts[Math.floor(dts.length * .95)].toFixed(1) + ' ms)'); } };
+      requestAnimationFrame(pas); });
+    panneau.querySelector('[data-maillot]').addEventListener('click', async () => {
+      zone.querySelector('.sd-nav-lien[data-cible="equipe"]').click(); // le menu amène directement sur l'équipe
+      await attendre(2500); // le maillot monte et les cartes entrent
+      elimination.length = 0;
+      const style = document.createElement('style'); document.head.appendChild(style);
+      for (const [nom, regle] of VARIANTES) {
+        style.textContent = regle;
+        panneau.querySelector('[data-direct]').textContent = 'test du maillot : ' + nom + '…';
+        await attendre(1200);
+        elimination.push(nom + ' : ' + await mesurer3s());
+      }
+      style.remove();
+      afficher();
     });
     panneau.querySelector('[data-copier]').addEventListener('click', () => navigator.clipboard.writeText(rapport()).then(() => alert('Rapport copié : collez-le dans Discord.'), () => alert('Copie impossible : utilisez « Télécharger le .txt ».')));
     panneau.querySelector('[data-txt]').addEventListener('click', () => {
