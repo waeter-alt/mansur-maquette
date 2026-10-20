@@ -340,6 +340,8 @@ function enregistrerEffet(effet) { EFFET = effet; }
    Étape 3 : photo du trophée, portail retravaillé (fluide, étincelles, atterrissage), le vrai tissu coule dans le planning ;
    pensée pour le thème « Premier » (jaune et violet du planning de l'asso). Étape 4 : le maillot garde ses couleurs d'origine
    (variables « --maillot-* » du thème), raccord invisible maillot → planning, défilement amorti sur toute la page.
+   Étape 5 (2026-10-20) : NOUVEAU LOGO (logo-v7, variante M) : le mim d'A5 · P5 rogné par l'étoile E1, détourée d'un fin trait
+   de métal, avec un point au centre ; la caméra entre toujours au centre de l'étoile. La version précédente : tag site-mansur-v1.
    Les autres sections suivront, une par une.
    Base reprise du Site MANSUR : maquette du site one page du club, carte blanche de Duncan, pensée pour le thème Améthyste.
    Ordre de la page : hero (logo E1 · P2 Détail), l'équipe (copie de Labo - JOUEURS), planning de la saison Premier,
@@ -459,6 +461,10 @@ const EffetSiteMansurDA = {
   // Les liens du club. MAQUETTE : seul le Twitch de Medhielm est connu ; les autres sont à demander à l'asso (bouton « bientôt »).
   liensClub: { discord: '', twitch: '', x: '', tiktok: '', contact: '' },
   // Le contour de l'étoile du logo retenu par le vote (E1 · P2 Détail), dans un carré de 256 : le contour d'origine et deux trous.
+  // Le logo (logo-v7, variante M, 2026-10-20) : le mim (contour et œil en croissant) d'A5 · P5 ; l'étoile E1 y est découpée,
+  // centrée en (108, 108) à l'échelle 0,32, détourée d'un trait de 1,3 et marquée d'un point au centre (image de Duncan).
+  logoMim: 'M162.8784134469722 59.823930025160365Q192.0354748198596 60.68149065377469 202.75498267753875 131.00146220015017Q203.6125433061531 135.718045657529 201.46864173461728 138.290727543372L177.88572444772305 167.87656923056656Q174.88426224757288 172.16437237363823 169.73889847588686 170.87803143071673Q136.72281427423496 161.44486451595904 111.42477573011209 140.00584880060066Q91.27210095767522 196.1760699748396 62.972600213402174 196.1760699748396Q59.971138013252 196.1760699748396 56.54089549879466 187.1716833743891Q49.68041046987998 165.7326676590307 56.11211518448749 159.72974325873037Q58.6847970703305 157.58584168719455 62.972600213402174 157.58584168719455Q82.69649467153188 157.15706137288737 100.70526787243291 133.57414408599317Q106.70819227273326 125.42731811415698 128.5759883023988 86.40830951220474Q143.58329930314966 59.823930025160365 162.8784134469722 59.823930025160365Z M132.00623081685615 101.84440082726276Q147.013541817607 116.42293151370646 170.5964591045012 121.56829528539247Q171.02523941880838 103.13074177018427 158.16182998959334 97.12781736988393Q145.2984205603783 91.12489296958358 132.00623081685615 101.84440082726276Z',
+  etoileDansLogo: { cx: 108, cy: 108, k: 0.32 },
   etoileE1: 'M208.02 34.99 L155.56 104.77 L210.00 117.01 L161.11 131.55 L168.43 159.44 L136.72 142.88 L126.00 221.01 L112.22 150.27 L80.75 162.27 L89.04 132.32 L46.00 117.01 L98.28 105.53 L89.23 80.24 L112.99 85.60 L126.00 61.01 L137.48 89.30 Z M126 110 L134 118 L126 126 L118 118 Z M136.84 109.02 L194.47 50.70 L192.47 48.74 L134.84 107.06 Z',
   textes: {
     normal: { accroche: 'Esport · Saison 2026-27', role: 'Rôle', agent: 'Agent favori', stats: ['ACS', 'K/D', 'HS'], indice: 'Voir le joueur', retour: 'Retour', rappel: 'Retourner la carte' },
@@ -641,7 +647,7 @@ const EffetSiteMansurDA = {
   --etoile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cg fill='none' stroke='%23000' stroke-width='1.4'%3E%3Crect x='16' y='16' width='24' height='24'/%3E%3Crect x='16' y='16' width='24' height='24' transform='rotate(45 28 28)'/%3E%3C/g%3E%3Ccircle cx='0' cy='0' r='2'/%3E%3C/svg%3E");
   -webkit-mask: var(--etoile) 0 0 / 56px 56px repeat; mask: var(--etoile) 0 0 / 56px 56px repeat; }
 .sd-contenu { position: relative; z-index: 1; display: grid; justify-items: center; gap: 14px; padding: 24px; text-align: center; will-change: transform, opacity; }
-.sd-logo { width: clamp(90px, 16vw, 170px); height: auto; overflow: visible; }
+.sd-logo { width: clamp(120px, 19vw, 210px); height: auto; overflow: visible; } /* le mim occupe moins de son carré que l'étoile seule */
 .sd-logo .etoile { filter: drop-shadow(0 0 6px var(--metal-reflet)); }
 .sd-mot { margin: 6px 0 0; font: 400 clamp(20px, 4.2vw, 46px)/1 var(--police-logo, "Arial Black", sans-serif); letter-spacing: .42em; padding-left: .42em; color: var(--couleur-texte); }
 .sd-arabe { margin: 0; font: 600 clamp(14px, 2vw, 20px)/1 "Segoe UI", "Noto Naskh Arabic", "Arial", sans-serif; color: var(--metal-moyen); }
@@ -1497,7 +1503,7 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
 .sd-bouton--contour:hover { background: color-mix(in srgb, var(--metal-clair) 12%, var(--couleur-nuit)); }
 /* Le logo du menu : l'étoile fait un huitième de tour (elle retombe sur ses branches). */
 .sd-nav-logo svg { transition: transform .6s cubic-bezier(.3, 1.6, .5, 1), filter .3s; }
-.sd-nav-logo:hover svg { transform: rotate(45deg) scale(1.15); filter: drop-shadow(0 0 8px var(--metal-reflet)); }
+.sd-nav-logo:hover svg { transform: rotate(-8deg) scale(1.15); filter: drop-shadow(0 0 8px var(--metal-reflet)); }
 .sd-nav-logo span { transition: letter-spacing .4s cubic-bezier(.2, .8, .2, 1), color .3s; }
 .sd-nav-logo:hover span { letter-spacing: .46em; color: var(--metal-reflet); }
 .sd-nav-lien small { transition: transform .3s, color .3s; }
@@ -1546,12 +1552,12 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
 .sd-emplacement:hover { border-style: solid; color: var(--metal-clair); letter-spacing: .36em; background-color: color-mix(in srgb, var(--metal-clair) 6%, transparent); }
 /* Le grand appel : l'étoile tourne lentement quand on s'en approche. */
 .sd-final-etoile { transition: transform 1.6s cubic-bezier(.2, .8, .2, 1), opacity .6s; }
-.sd-final:hover .sd-final-etoile { transform: rotate(45deg) scale(1.08); opacity: .18; }
+.sd-final:hover .sd-final-etoile { transform: rotate(-6deg) scale(1.08); opacity: .18; }
 /* Pied de page : un trait d'or se dessine sous le lien. */
 .sd-pied a:not(.sd-verrou) { background: linear-gradient(90deg, var(--metal-clair), var(--metal-reflet)) 0 100% / 0 1px no-repeat; transition: background-size .35s cubic-bezier(.2, .8, .2, 1), color .2s; }
 .sd-pied a:not(.sd-verrou):hover { background-size: 100% 1px; }
 .sd-verrou svg { transition: transform .6s cubic-bezier(.3, 1.6, .5, 1); }
-.sd-verrou:hover svg { transform: rotate(45deg); }
+.sd-verrou:hover svg { transform: rotate(-8deg) scale(1.06); }
 /* La récompense du clic : une gerbe d'étincelles de métal jaillit sous le doigt (voir « etincelles » dans le code). */
 .sd-gerbe { position: absolute; z-index: 30; width: 0; height: 0; pointer-events: none; }
 .sd-gerbe i { position: absolute; left: -3px; top: -3px; width: 6px; height: 6px; border-radius: 1px; rotate: 45deg;
@@ -1785,10 +1791,15 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       : '<a class="' + classe + '" href="#" data-bientot title="Lien à venir"' + (etiquette ? ' aria-label="' + etiquette + ' (lien à venir)"' : '') + '>' + contenu + '</a>';
     const liens = this.liensClub;
     const iconeTrait = nom => '<svg viewBox="0 0 24 24" aria-hidden="true">' + iconesFace[nom] + '</svg>';
-    // L'étoile à 8 branches du logo retenu (E1 · P2 Détail : petit losange au centre, filet le long de la plus longue branche).
-    const etoileLogo = (id, classe) => '<svg class="' + classe + '" viewBox="40 28 176 200" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1">' +
-      '<stop offset="0" style="stop-color:var(--metal-sombre)"/><stop offset=".4" style="stop-color:var(--metal-moyen)"/><stop offset=".62" style="stop-color:var(--metal-reflet)"/><stop offset="1" style="stop-color:var(--metal-clair)"/>' +
-      '</linearGradient></defs><path fill="url(#' + id + ')" fill-rule="evenodd" d="' + this.etoileE1 + '"/></svg>';
+    // LE LOGO (logo-v7) : le mim, dont l'étoile E1 est découpée (masque), son contour en trait de métal, et un point au centre.
+    const place = this.etoileDansLogo;
+    const etoileDuLogo = this.etoileE1.split('Z')[0].replace(/([\d.]+) ([\d.]+)/g, (_, x, y) =>
+      (place.cx + (x - 126) * place.k).toFixed(2) + ' ' + (place.cy + (y - 118) * place.k).toFixed(2)) + 'Z';
+    const formesLogo = (peinture, masque) => '<path fill="' + peinture + '" fill-rule="evenodd" mask="url(#' + masque + ')" d="' + this.logoMim + '"/>' +
+      '<path fill="none" stroke="' + peinture + '" stroke-width="1.3" stroke-linejoin="miter" d="' + etoileDuLogo + '"/><circle cx="' + place.cx + '" cy="' + place.cy + '" r="2.2" fill="' + peinture + '"/>';
+    const degradeOr = id => '<linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--metal-sombre)"/><stop offset=".4" style="stop-color:var(--metal-moyen)"/><stop offset=".62" style="stop-color:var(--metal-reflet)"/><stop offset="1" style="stop-color:var(--metal-clair)"/></linearGradient>';
+    const masqueEtoile = id => '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256"><rect width="256" height="256" fill="#fff"/><path fill="#000" d="' + etoileDuLogo + '"/></mask>';
+    const etoileLogo = (id, classe) => '<svg class="' + classe + '" viewBox="45 50 166 155" aria-hidden="true"><defs>' + degradeOr(id) + masqueEtoile(id + '-masque') + '</defs>' + formesLogo('url(#' + id + ')', id + '-masque') + '</svg>';
     const verrou = (id, href) => '<a class="sd-verrou" href="' + href + '" data-cible="accueil">' + etoileLogo(id, '') + '<b>MANSUR</b><i lang="ar" dir="rtl">منصور</i><small>Esport · Saison 2026-27</small></a>';
     const entete = (numero, surTitre, titre, intro) =>
       '<header class="sd-entete sd-revele"><p class="sd-sur-titre"><b>' + numero + '</b>' + surTitre + '</p><h2 class="sd-titre">' + titre + '</h2>' + (intro ? '<p class="sd-intro">' + intro + '</p>' : '') + '</header>';
@@ -1922,14 +1933,14 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       '<div class="sd-defilement" tabindex="0" role="region" aria-label="Site MANSUR (maquette) : faites défiler la page">' +
         '<div class="sd-ouverture">' +
           '<section class="sd-accueil" data-section="accueil"><div class="sd-accueil-contenu">' +
-            '<svg class="sd-logo" viewBox="40 28 176 200" data-cible="club" role="button" tabindex="0" aria-label="Logo MANSUR : entrer dans l\'étoile, vers le club">' +
-              '<defs><linearGradient id="sd-or" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--metal-sombre)"/><stop offset=".4" style="stop-color:var(--metal-moyen)"/><stop offset=".62" style="stop-color:var(--metal-reflet)"/><stop offset="1" style="stop-color:var(--metal-clair)"/></linearGradient>' +
+            '<svg class="sd-logo" viewBox="45 50 166 155" data-cible="club" role="button" tabindex="0" aria-label="Logo MANSUR : entrer dans l\'étoile, vers le club">' +
+              '<defs>' + degradeOr('sd-or') + masqueEtoile('sd-or-masque') +
                 '<linearGradient id="sd-reflet" gradientUnits="userSpaceOnUse" x1="-90" y1="0" x2="0" y2="-45">' +
                 '<stop offset="0" style="stop-color:var(--metal-reflet)" stop-opacity="0"/><stop offset=".5" style="stop-color:var(--metal-reflet)" stop-opacity=".95"/><stop offset="1" style="stop-color:var(--metal-reflet)" stop-opacity="0"/>' +
-                '<animateTransform attributeName="gradientTransform" type="translate" values="-20 0; 360 0; 360 0" keyTimes="0; .45; 1" dur="3.6s" repeatCount="indefinite"/>' +
+                '<animateTransform attributeName="gradientTransform" type="translate" values="-20 0; 380 0; 380 0" keyTimes="0; .45; 1" dur="3.6s" repeatCount="indefinite"/>' +
               '</linearGradient></defs>' +
-              '<path class="etoile" fill="url(#sd-or)" fill-rule="evenodd" d="' + this.etoileE1 + '"/>' +
-              '<path class="sd-brillance" fill="url(#sd-reflet)" fill-rule="evenodd" d="' + this.etoileE1 + '"/>' +
+              formesLogo('url(#sd-or)', 'sd-or-masque') +
+              '<g class="sd-brillance">' + formesLogo('url(#sd-reflet)', 'sd-or-masque') + '</g>' +
             '</svg>' +
             '<p class="sd-mot">MANSUR</p>' +
             '<p class="sd-arabe" lang="ar" dir="rtl">منصور</p>' +
@@ -3000,8 +3011,8 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       accueil.style.setProperty('--ouverture', '0');
       contenuAccueil.style.transform = 'none';
       const b = logoAccueil.getBoundingClientRect(), a = accueil.getBoundingClientRect(), c = contenuAccueil.getBoundingClientRect();
-      echelleLogo = b.width / 176; // le logo est dessiné dans une boîte de 176 de large (viewBox)
-      coeur = [b.left - a.left + (COEUR[0] - 40) * echelleLogo, b.top - a.top + (COEUR[1] - 28) * echelleLogo];
+      echelleLogo = b.width / 166; // le logo est dessiné dans une boîte de 166 de large (viewBox 45 50 166 155)
+      coeur = [b.left - a.left + (place.cx - 45) * echelleLogo, b.top - a.top + (place.cy - 50) * echelleLogo]; // le centre de l'étoile
       yLisse = defilement.scrollTop;
       accueil.style.setProperty('--ouverture', avant);
       // Le hero grossit autour du cœur de l'étoile : il reste centré sur le portail pendant qu'on plonge dedans.
@@ -3068,7 +3079,7 @@ html[data-qualite="minimal"] .sd-imprime::before, html[data-qualite="minimal"] .
       // Taille : d'un quart du logo jusqu'à couvrir le coin le plus éloigné, en zoom régulier (exponentiel), doux au départ et
       // à l'arrivée ; l'étoile fait un huitième de tour en s'ouvrant.
       const coin = Math.hypot(Math.max(coeur[0], defilement.clientWidth - coeur[0]), Math.max(coeur[1], h - coeur[1]));
-      const k0 = echelleLogo * 0.25, k1 = (coin / CREUX_MINI) * 1.1, e = lisse(p);
+      const k0 = echelleLogo * place.k, k1 = (coin / CREUX_MINI) * 1.1, e = lisse(p); // départ : l'étoile du logo, à sa taille exacte
       const k = k0 * Math.pow(k1 / k0, e), tour = e * Math.PI / 4;
       const d = formeEtoile(k, tour);
       // Le hero grossit moins vite que le portail (puissance 0,6) : assez pour donner l'impression de plonger, sans couche géante.
