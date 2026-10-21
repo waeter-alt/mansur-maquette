@@ -4975,13 +4975,12 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
    s'efface : on passe à travers. À 1, la découpe disparaît et le club défile normalement. Mode calme : rien de tout ça,
    le hero et le club se suivent comme deux sections ordinaires. */
 .mo-ouverture { position: relative; }
-/* Le club reste en haut de l'écran pendant l'ouverture, puis encore un instant (« tenue ») : on atterrit, on ne file pas.
-   Sa position et son zoom sont posés par le code ; la marge du bas rend au défilement la place de la tenue.
-   (Essai « sticky » du 2026-10-21 retiré sur téléphone : bien pire au doigt selon Duncan.) */
-.mo-scene:not([data-calme]) .mo-ouverture > .mo-section { border-top: 0; margin-bottom: var(--mo-tenue, 0px); }
-/* ESSAI « collant » (?essai=collant, 2026-10-21) : le club tenu par le navigateur (sticky) au lieu du code. À juger au doigt. */
-.mo-scene[data-essai-collant]:not([data-calme]) .mo-ouverture > .mo-section { margin-bottom: 0; position: sticky; top: 0; z-index: 1; margin-top: calc(-1 * var(--h)); }
-.mo-scene[data-essai-collant]:not([data-calme]) .mo-ouverture::after { content: ""; display: block; height: calc(var(--h) + var(--mo-tenue, 0px)); }
+/* Le club reste en haut de l'écran pendant l'ouverture de l'étoile, puis défile aussitôt (plus de « tenue » sur téléphone :
+   au doigt, la page semblait ne plus répondre). Choix de Duncan du 2026-10-21, après essai au doigt de 4 versions : c'est le
+   NAVIGATEUR qui le tient (position: sticky). Tenu par le code, il avait toujours une image de retard sur le doigt et tremblait.
+   Il est posé sur le hero (marge -1 écran) ; l'espace après lui (1 écran) est la durée pendant laquelle il reste en haut. */
+.mo-scene:not([data-calme]) .mo-ouverture > .mo-section { border-top: 0; position: sticky; top: 0; z-index: 1; margin-top: calc(-1 * var(--h)); }
+.mo-scene:not([data-calme]) .mo-ouverture::after { content: ""; display: block; height: calc(var(--h) + var(--mo-tenue, 0px)); }
 .mo-accueil .mo-logo { cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 /* Au clic (souris ou doigt), pas de cadre de « sélection » autour du logo (Duncan, 2026-10-21) ; au clavier, le contour reste. */
 .mo-accueil .mo-logo:focus:not(:focus-visible) { outline: none; }
@@ -5416,10 +5415,6 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     const scene = document.createElement('div');
     scene.className = 'mo-scene';
     if (calme) scene.dataset.calme = '1';
-    // ESSAIS (2026-10-21, temporaire) : à comparer au doigt sur le vrai téléphone, une différence à la fois.
-    //   collant : le club est tenu par le navigateur (sticky) ; sec : l'étoile suit le doigt sans amorti ; sanszoom : le club n'a plus son zoom d'arrivée.
-    const essais = new Set((new URLSearchParams(location.search).get('essai') || '').split(','));
-    if (essais.has('collant')) scene.dataset.essaiCollant = '';
     // MOBILE (2026-10-21) : écran tactile (ou premier appui du doigt) → « data-tactile » : les effets de survol sont coupés,
     // sinon ils restent collés après un appui. Le doigt a ses propres réponses (.mo-appui, .mo-allume).
     if (matchMedia('(hover: none)').matches) scene.dataset.tactile = '';
@@ -6784,7 +6779,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     const nav = scene.querySelector('.mo-nav');
     const IDS_SECTIONS = ['accueil', 'club', 'equipe', 'planning', 'recrutement', 'partenaires', 'contact'];
     // « equipe » : on arrive quand l'équipe est entrée sur le maillot ; le lien s'allume dès que la scène du maillot arrive.
-    const cible = id => id === 'accueil' ? 0 : id === 'club' && essais.has('collant') ? defilement.clientHeight : id === 'equipe' ? debutHero() + longueur + 2 : (scene.querySelector('[data-section="' + id + '"]')?.offsetTop || 0);
+    const cible = id => id === 'accueil' ? 0 : id === 'club' ? defilement.clientHeight : id === 'equipe' ? debutHero() + longueur + 2 : (scene.querySelector('[data-section="' + id + '"]')?.offsetTop || 0);
     const debutSection = id => id === 'equipe' ? debutHero() : cible(id);
     let sectionActive = '';
     function sectionCourante() {
@@ -6838,8 +6833,8 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     for (let i = 0; i < sommets.length; i += 4) anglesPointes.push(Math.atan2(sommets[i + 1] - COEUR[1], sommets[i] - COEUR[0]));
     // FLUIDITÉ : l'ouverture suit le défilement avec un léger amorti (comme le V du maillot) ; le club, lui, reste exactement
     // en place (sa position vient du défilement réel), seuls la taille du portail, son tour et les étincelles sont amortis.
-    const TENUE = 0.6;          // temps d'arrêt sur le club, une fois le portail ouvert (part d'écran de défilement)
-    const AMORTI_MS = essais.has('sec') ? 1 : 60; // plus grand = ouverture plus « coulée » (essai « sec » : 1 ms)
+    const TENUE = 0;            // mobile : 0,6 → 0 (Duncan, 2026-10-21 : il fallait « scroller plus que d'habitude » pour quitter le club)
+    const AMORTI_MS = 60;       // plus grand = ouverture plus « coulée » (essai à 1 ms le 2026-10-21 : pas mieux au doigt)
     // Trois sortes de particules, chacune avec sa direction, sa vitesse et sa taille tirées une fois pour toutes :
     // des traînées de lumière (lignes), une poussière fine (points), des éclats en losange qui jaillissent des pointes.
     const hasard = (min, max) => min + Math.random() * (max - min);
@@ -6868,11 +6863,11 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // N'écrit une valeur que si elle change (une écriture inutile oblige le navigateur à tout revérifier).
     const poser = (el, nom, valeur) => { if (el.style.getPropertyValue(nom) !== valeur) el.style.setProperty(nom, valeur); };
     function poserTransformClub(y, h) {
-      const t = (essais.has('collant') ? '' : 'translateY(' + (Math.min(y, h * (1 + TENUE)) - h).toFixed(1) + 'px) ') + 'scale(' + echelleClub(yLisse, h).toFixed(4) + ')';
+      const t = 'scale(' + echelleClub(yLisse, h).toFixed(4) + ')'; // la position est tenue par le navigateur (sticky)
       if (club.style.transform !== t) club.style.transform = t;
     }
     // (Allégé : pas de zoom du club, un calque plein écran redimensionné à chaque image coûte trop sans carte graphique.)
-    const echelleClub = (y, h) => qualite !== 'complet' || essais.has('sanszoom') ? 1 : 1 + 0.12 * (1 - lisse(Math.min(1, Math.max(0, y / (h * (1 + TENUE))))));
+    const echelleClub = () => 1; // mobile : pas de zoom d'arrivée du club (choix de Duncan du 2026-10-21, la version DA garde son zoom de 12 %)
     // Le logo flotte encore un peu au tout début de l'ouverture (--mo-flotte) : tant que c'est le cas, le portail le suit à chaque image.
     const FIN_FLOTTEMENT = 0.06;
     const logoFlotte = () => !calme && qualite === 'complet' && yLisse > 0 && yLisse < defilement.clientHeight * FIN_FLOTTEMENT;
