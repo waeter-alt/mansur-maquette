@@ -4097,6 +4097,12 @@ const EffetSiteMansurMobile = {
   css: `
 .mo-scene { position: absolute; inset: 0; --h: 600px; --long: 720px; }
 .mo-defilement { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
+/* POINTS D'ARRÊT (essai ?aimant, 2026-10-21) : au doigt, l'élan s'arrête sur les moments qu'on ratait. C'est le téléphone qui
+   s'en charge (aimantation native du défilement) : aucun retard. Repères invisibles de 1 px, posés par le code.
+   Ferme (scroll-snap-stop: always) : l'élan ne peut pas passer par-dessus. Doux : seulement si l'on s'arrête déjà près. */
+.mo-scene[data-aimant] .mo-defilement { scroll-snap-type: y proximity; }
+.mo-aimant { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; visibility: hidden; scroll-snap-align: start; }
+.mo-aimant--ferme { scroll-snap-stop: always; }
 /* Le hero est plus haut que l'écran : le surplus est la distance de défilement de la transition. */
 .mo-hero { position: relative; height: calc(var(--h) + var(--long)); }
 /* (2026-10-21) Le haut de la scène reprend la couleur unie du bas du club, puis rejoint son halo : aucun raccord à l'arrivée. */
@@ -6765,7 +6771,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // Hors écran (onglet caché, effet défilé hors de vue) : la boucle s'arrête pour ne rien consommer.
     const observateurVisibilite = new IntersectionObserver(entrees => { visible = entrees[0].isIntersecting; demarrer(); });
     observateurVisibilite.observe(sectionHero);
-    const observateurTaille = new ResizeObserver(() => { poserUnites(); mettreEnPage(); });
+    const observateurTaille = new ResizeObserver(() => { poserUnites(); mettreEnPage(); placerAimants(); });
     (window.requestIdleCallback || setTimeout)(() => { if (!coeur && !calme) mesurerLogo(); });
     observateurTaille.observe(defilement);
     mettreEnPage();
@@ -6781,6 +6787,25 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // « equipe » : on arrive quand l'équipe est entrée sur le maillot ; le lien s'allume dès que la scène du maillot arrive.
     const cible = id => id === 'accueil' ? 0 : id === 'club' ? defilement.clientHeight : id === 'equipe' ? debutHero() + longueur + 2 : (scene.querySelector('[data-section="' + id + '"]')?.offsetTop || 0);
     const debutSection = id => id === 'equipe' ? debutHero() : cible(id);
+    // Les points d'arrêt (essai ?aimant) : le club pile ouvert et les cartes entrées sur le maillot (fermes), le début des
+    // sections suivantes (doux). Recalculés à chaque changement de taille.
+    const aimants = !calme && new URLSearchParams(location.search).has('aimant')
+      ? [['club', true], ['cartes', true], ['planning', false], ['recrutement', false], ['partenaires', false], ['contact', false]].map(([id, ferme]) => {
+          const el = document.createElement('i');
+          el.className = 'mo-aimant' + (ferme ? ' mo-aimant--ferme' : '');
+          el.dataset.aimant = id;
+          defilement.appendChild(el);
+          return el;
+        })
+      : [];
+    if (aimants.length) scene.dataset.aimant = '';
+    function placerAimants() {
+      aimants.forEach(el => {
+        const id = el.dataset.aimant;
+        el.style.top = (id === 'cartes' ? debutHero() + longueurTotale() : cible(id)) + 'px';
+      });
+    }
+    placerAimants();
     let sectionActive = '';
     function sectionCourante() {
       const y = defilement.scrollTop, h = defilement.clientHeight;
