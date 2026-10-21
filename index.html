@@ -4715,7 +4715,15 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 .mo-scene[data-holo-tel] .moj-carte.active .moj-entree { perspective: 520px; perspective-origin: 50% 85%; }
 .mo-scene[data-holo-tel] .moj-carte.active .moj-survol { transform-origin: 50% 100%; }
 .mo-scene[data-holo-tel] .moj-carte.active.retournee .moj-survol { transform: scale(var(--cj-agrandi, 1.1)) rotateX(76deg);
-  transition: transform .5s cubic-bezier(.5, 0, .3, 1.15) calc(var(--cj-duree, .8s) * .5); }
+  transition: transform .3s cubic-bezier(.5, 0, .3, 1.15) .35s; }
+/* TEMPO (2026-10-22, « trop lent ») : sur téléphone, retournement en 0,35 s, puis bascule à plat en 0,3 s, sans pause (le dos du
+   maillot se voit le temps de la bascule) ; l'hologramme s'allume quand la carte touche la table (650 ms, voir retourner) :
+   faisceau en 0,2 s, projection 0,1 s après en 0,4 s, réseaux avec elle (40 ms de décalage, 0,2 s chacun). */
+.mo-scene[data-holo-tel] .moj-carte.active .moj-pivot { transition-duration: .35s; }
+.mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-faisceau { transition-duration: .2s; }
+.mo-scene[data-holo-tel]:not([data-calme]) .moj-holo--fiche.visible .moj-holo-projection,
+.mo-scene[data-holo-tel]:not([data-calme]) .moj-holo--fiche.visible::before { animation: moj-holo-allumage .4s linear .1s both; }
+.mo-scene[data-holo-tel] .mob-bouton { animation-duration: .2s; animation-delay: calc(.1s + var(--rang, 0) * 40ms); }
 .mo-scene[data-holo-tel][data-holo] .moj-carte.active .moj-contour { opacity: 1; animation: none; }
 .mo-scene[data-holo-tel] .moj-carte.active .moj-rappel { display: none; } /* illisible couchée : la carte reste touchable, « Retour » est à côté */
 /* Le faisceau part du milieu de la carte couchée ; les réglages fins de l'ordinateur (zoom, décalage) ne s'appliquent pas. */
@@ -6508,7 +6516,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         defilementChoix = defilement.scrollTop;
         // Mode calme : on saute le trajet vers le centre et le retournement : la carte arrive déjà de dos, avec ses hologrammes.
         if (calme) retourner(i, true);
-        else minuterieRetournement = setTimeout(() => { if (actif === i) retourner(i, true); }, voisin ? 150 : 480);
+        else minuterieRetournement = setTimeout(() => { if (actif === i) retourner(i, true); }, voisin ? 150 : telHolo ? 250 : 480); // téléphone : la carte se retourne déjà en route vers le bas
       }
     }
 
@@ -6715,9 +6723,9 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       const carte = cartes[i], flotte = flottes[i];
       if (carte.classList.contains('retournee') === oui) return;
       carte.classList.toggle('retournee', oui);
-      // L'hologramme : seulement pour le joueur choisi. Téléphone : il s'allume une fois la carte couchée (fin du retournement,
-      // puis 0,5 s pour se coucher, voir le CSS).
-      if (oui && i === actif && telHolo && !calme) minuterieRetournement = setTimeout(() => { if (actif === i && carte.classList.contains('retournee')) montrerHologramme(i); }, r.dureeRetournement * 500 + 500);
+      // L'hologramme : seulement pour le joueur choisi. Téléphone : il s'allume quand la carte touche la table (retournement
+      // 0,35 s + bascule 0,3 s, voir « TEMPO » dans le CSS).
+      if (oui && i === actif && telHolo && !calme) minuterieRetournement = setTimeout(() => { if (actif === i && carte.classList.contains('retournee')) montrerHologramme(i); }, 650);
       else if (oui && i === actif) montrerHologramme(i);
       if (!oui && holoCarte === i) cacherHologramme();
       if (oui) {
