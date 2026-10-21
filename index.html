@@ -5396,6 +5396,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-bouton--discord {
 .mo-barre-match span { align-self: end; font: 500 15px/1.2 var(--mo-police-texte); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .mo-barre-discord { min-height: 48px; padding: 0 20px; font-size: 17px; }
 .mo-scene[data-barre] .mo-pied { padding-bottom: 104px; } /* la barre ne cache pas le bas de la page */
+.mo-nav.ouvert ~ .mo-barre-actions { transform: translateY(calc(100% + 24px)); } /* tiroir du menu ouvert : la barre s'efface */
 .mo-scene[data-calme] .mo-barre-actions, .mo-scene[data-calme] .mo-appui { transition: none; }
 html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--couleur-nuit); }
 
@@ -5418,20 +5419,20 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
 .mo-poste-tete .mo-poste-num { grid-area: num; } .mo-poste-tete .mo-poste-nom { grid-area: nom; } .mo-poste-tete .mo-poste-texte { grid-area: texte; } .mo-poste-tete .mo-poste-statut { grid-area: statut; }
 .mo-poste-chevron { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--metal-moyen); transition: transform .4s cubic-bezier(.3, 1.4, .5, 1), box-shadow .25s; }
 .mo-poste-chevron::before { content: ""; width: 8px; height: 8px; margin-top: -4px; border-right: 2px solid var(--metal-clair); border-bottom: 2px solid var(--metal-clair); transform: rotate(45deg); }
-/* (A) L'appui : l'en-tête se remplit d'or de gauche à droite, le temps du toucher. Sur ordinateur, le survol fait de même. */
-.mo-poste-tete::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: scaleX(0); transform-origin: 0 50%; transition: transform .35s cubic-bezier(.2, .8, .2, 1); background: var(--metal-moyen); }
-.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui)::before { transform: none; }
-.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui), .mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-poste-num { color: var(--couleur-nuit); }
-.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
-.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-poste-chevron { box-shadow: inset 0 0 0 1.5px var(--couleur-nuit); }
-.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-poste-chevron::before { border-color: var(--couleur-nuit); }
+/* Le poste OUVERT (et seulement lui) : son en-tête se remplit d'or au toucher et reste jaune tant qu'il est ouvert
+   (Duncan, 2026-10-21 : pas d'or pendant l'appui). */
+.mo-poste-tete::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: scaleX(0); transform-origin: 0 50%; transition: transform .45s cubic-bezier(.2, .8, .2, 1); background: var(--metal-moyen); }
+.mo-poste.ouvert > .mo-poste-tete::before { transform: none; }
+.mo-poste.ouvert > .mo-poste-tete, .mo-poste.ouvert > .mo-poste-tete .mo-poste-num { color: var(--couleur-nuit); }
+.mo-poste.ouvert > .mo-poste-tete .mo-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
+.mo-poste.ouvert > .mo-poste-tete .mo-poste-chevron { box-shadow: inset 0 0 0 1.5px var(--couleur-nuit); }
+.mo-poste.ouvert > .mo-poste-tete .mo-poste-chevron::before { border-color: var(--couleur-nuit); }
 /* (C) L'accordéon : la hauteur s'ouvre en douceur (grille 0fr → 1fr), le chevron se retourne. */
 .mo-poste-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2, .8, .2, 1); }
 .mo-poste-detail > div { overflow: hidden; display: grid; gap: 18px; padding: 0 10px; visibility: hidden; transition: padding .45s cubic-bezier(.2, .8, .2, 1), visibility 0s .45s; }
 .mo-poste.ouvert .mo-poste-detail { grid-template-rows: 1fr; }
 .mo-poste.ouvert .mo-poste-detail > div { padding: 4px 10px 28px; visibility: visible; transition-delay: 0s; }
 .mo-poste.ouvert .mo-poste-chevron { transform: rotate(180deg); }
-.mo-poste.ouvert .mo-poste-num { color: var(--metal-reflet); }
 .mo-poste-bloc small, .mo-poste-rythme small { display: block; margin-bottom: 8px; font: 700 12px/1 var(--mo-police-texte); letter-spacing: .16em; text-transform: uppercase; color: var(--metal-moyen); }
 .mo-poste-bloc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
 .mo-poste-bloc li { position: relative; padding-left: 20px; font: 400 16px/1.5 var(--mo-police-texte); color: color-mix(in srgb, var(--couleur-texte) 88%, transparent); }
@@ -5983,7 +5984,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       const zoneHaut = nuqueTissu.offsetTop + nuqueTissu.offsetHeight + 14;
       zoneHautPx = zoneHaut;
       // En bas, on laisse la place de la barre de commandes du lab quand l'écran est assez haut.
-      const zoneHauteur = hauteurDos - zoneHaut - 18; // marge au-dessus de l'ourlet (la barre « Lecture » du lab est masquée sur le site)
+      const zoneHauteur = hauteurDos - zoneHaut - 18 - (largeur < 640 ? 76 : 0); // marge au-dessus de l'ourlet ; téléphone : la place de la barre d'actions
       // Écran étroit (téléphone) : pas de place pour les hologrammes.
       const etroit = largeur < 640;
       const tailleAvec = panneau => Math.min(380, largeur * (etroit ? 0.62 : 0.34), (zoneHauteur - panneau) / 1.25);
@@ -7171,23 +7172,14 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       poste.classList.toggle('ouvert', ouvrir);
       tete.setAttribute('aria-expanded', String(ouvrir));
     }));
-    const cartesBarre = scene.querySelector('.moj-cartes');
-    let barreVisible = false, dernierYBarre = 0;
-    // Téléphone : la barre apparaît après l'accueil, se cache quand on descend vite (plus de 30 px d'un coup) et revient dès qu'on
-    // remonte ; jamais pendant qu'un joueur est choisi ou que le tiroir est ouvert. Le poste du recrutement qui passe au centre
-    // de l'écran s'allume (comme au survol sur ordinateur).
+
+    // Téléphone : la barre d'actions en bas de l'écran.
     function majTelephone(y, h) {
       const etroit = nav.dataset.etroit === 'oui';
       scene.toggleAttribute('data-barre', etroit);
       if (!etroit) return;
-      const descente = y - dernierYBarre;
-      const zoneCartes = cartesBarre.getBoundingClientRect(), hautScene = scene.getBoundingClientRect().top;
-      const cartesALEcran = zoneCartes.bottom > hautScene && zoneCartes.top < hautScene + h; // la barre cacherait le bas des cartes
-      if (y < h * 0.8 || cartesALEcran || scene.dataset.mode === 'selection' || nav.classList.contains('ouvert')) barreVisible = false;
-      else if (dernierYBarre < h * 0.8 || descente < -2) barreVisible = true;
-      else if (descente > 30) barreVisible = false;
-      dernierYBarre = y;
-      barreActions.classList.toggle('visible', barreVisible);
+      // (Duncan, 2026-10-21 : elle disparaissait sans cesse) Visible dès que l'étoile est ouverte, sans exception.
+      barreActions.classList.toggle('visible', y >= h * 0.95);
     }
     function majNav() {
       const y = defilement.scrollTop, max = Math.max(1, defilement.scrollHeight - defilement.clientHeight);
@@ -7371,7 +7363,9 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       const ouvert = boutonTout.getAttribute('aria-expanded') !== 'true';
       boutonTout.setAttribute('aria-expanded', String(ouvert));
       boutonTout.textContent = ouvert ? 'Replier le planning' : 'Voir les ' + saison.semaines.length + ' semaines';
+      const avant = boutonTout.getBoundingClientRect().top;
       boutonTout.previousElementSibling.toggleAttribute('data-tout', ouvert);
+      defilement.scrollTop += boutonTout.getBoundingClientRect().top - avant; // le bouton reste sous le doigt
     });
     function majProchainMatch() {
       const maintenant = Date.now();
@@ -7440,7 +7434,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     let minuterieAppui = 0, enAppui = null;
     scene.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse') return;
-      const el = e.target.closest('.mo-bouton, .mo-nav-cta, .mo-poste-tete, .mo-canal, .mo-semaine, .mo-reseau');
+      const el = e.target.closest('.mo-bouton, .mo-nav-cta, .mo-canal, .mo-semaine, .mo-reseau'); // (pas les postes : rien à l'appui)
       if (!el) return;
       clearTimeout(minuterieAppui); enAppui?.classList.remove('mo-appui');
       const b = el.getBoundingClientRect();
