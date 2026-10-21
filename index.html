@@ -4338,6 +4338,25 @@ const EffetSiteMansurMobile = {
 @keyframes moj-doigt-appui { 0%, 100% { transform: none; } 8% { transform: scale(.72); } 20% { transform: none; } }
 .mo-scene[data-calme] .moj-curseur .d-onde { display: none; }
 .mo-scene[data-calme] .moj-curseur .d-point { animation: none; }
+/* LA CARTE RÉPOND AU DOIGT (mobile, 2026-10-21) : la carte qui porte l'indice vit au même rythme que le point de toucher
+   (cycle de 2,2 s, appui à 8 %), pour qu'on comprenne d'instinct « je touche, elle se retourne ». Trois temps, tirés des
+   principes d'animation : ANTICIPATION (elle se soulève quand le doigt arrive), ÉCRASEMENT sous l'appui, puis REBOND qui
+   l'entraîne vers un début de retournement (16°, on aperçoit sa tranche : elle se retourne) et se repose en oscillant
+   (mouvement qui continue). Le liseré doré s'allume au moment de l'appui : la réponse au geste. */
+.mo-scene[data-indice-clic] .moj-carte:not(.retournee):has(.moj-curseur[data-style="doigt"]) .moj-pivot { animation: moj-carte-appel 2.2s cubic-bezier(.3, .7, .3, 1) infinite; }
+.mo-scene[data-indice-clic] .moj-carte:not(.retournee):has(.moj-curseur[data-style="doigt"]) .moj-contour { animation: moj-carte-lueur 2.2s ease-out infinite; }
+@keyframes moj-carte-appel {
+  0% { transform: none; }
+  5% { transform: translateY(-4px) scale(1.015); }
+  9% { transform: translateY(2px) scale(.95); }
+  16% { transform: rotateY(-16deg) scale(1.03); }
+  25% { transform: rotateY(7deg) scale(1.01); }
+  33% { transform: rotateY(-2deg); }
+  42%, 100% { transform: none; }
+}
+@keyframes moj-carte-lueur { 0%, 7% { opacity: 0; } 10% { opacity: 1; } 40%, 100% { opacity: 0; } }
+.mo-scene[data-calme] .moj-carte .moj-pivot, .mo-scene[data-calme] .moj-carte .moj-contour { animation: none; }
+html:is([data-qualite="allege"], [data-qualite="minimal"]) .moj-carte .moj-pivot { animation: none; }
 .moj-curseur[data-style="souris"] .trace { fill: color-mix(in srgb, var(--moj-fond, var(--couleur-nuit)) 75%, transparent); stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 2.6; }
 .moj-curseur .trait { fill: none; stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 2; stroke-linecap: round; opacity: .75; }
 .moj-curseur .molette { fill: var(--moj-encre, var(--couleur-texte)); }
