@@ -4976,11 +4976,9 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
    le hero et le club se suivent comme deux sections ordinaires. */
 .mo-ouverture { position: relative; }
 /* Le club reste en haut de l'écran pendant l'ouverture, puis encore un instant (« tenue ») : on atterrit, on ne file pas.
-   (2026-10-21) C'est le NAVIGATEUR qui le tient (position: sticky), plus le code à chaque image : le code avait toujours une
-   image de retard sur le défilement, d'où un club qui tremblait (au doigt surtout). Il est posé sur le hero (marge -1 écran)
-   et l'espace après lui (1 écran + la tenue) est la durée pendant laquelle il reste en haut. Le code ne pose plus que son zoom. */
-.mo-scene:not([data-calme]) .mo-ouverture > .mo-section { border-top: 0; position: sticky; top: 0; z-index: 1; margin-top: calc(-1 * var(--h)); }
-.mo-scene:not([data-calme]) .mo-ouverture::after { content: ""; display: block; height: calc(var(--h) + var(--mo-tenue, 0px)); }
+   Sa position et son zoom sont posés par le code ; la marge du bas rend au défilement la place de la tenue.
+   (Essai « sticky » du 2026-10-21 retiré sur téléphone : bien pire au doigt selon Duncan.) */
+.mo-scene:not([data-calme]) .mo-ouverture > .mo-section { border-top: 0; margin-bottom: var(--mo-tenue, 0px); }
 .mo-accueil .mo-logo { cursor: pointer; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 /* Au clic (souris ou doigt), pas de cadre de « sélection » autour du logo (Duncan, 2026-10-21) ; au clavier, le contour reste. */
 .mo-accueil .mo-logo:focus:not(:focus-visible) { outline: none; }
@@ -6779,7 +6777,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     const nav = scene.querySelector('.mo-nav');
     const IDS_SECTIONS = ['accueil', 'club', 'equipe', 'planning', 'recrutement', 'partenaires', 'contact'];
     // « equipe » : on arrive quand l'équipe est entrée sur le maillot ; le lien s'allume dès que la scène du maillot arrive.
-    const cible = id => id === 'accueil' ? 0 : id === 'club' ? defilement.clientHeight : id === 'equipe' ? debutHero() + longueur + 2 : (scene.querySelector('[data-section="' + id + '"]')?.offsetTop || 0);
+    const cible = id => id === 'accueil' ? 0 : id === 'equipe' ? debutHero() + longueur + 2 : (scene.querySelector('[data-section="' + id + '"]')?.offsetTop || 0);
     const debutSection = id => id === 'equipe' ? debutHero() : cible(id);
     let sectionActive = '';
     function sectionCourante() {
@@ -6834,7 +6832,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // FLUIDITÉ : l'ouverture suit le défilement avec un léger amorti (comme le V du maillot) ; le club, lui, reste exactement
     // en place (sa position vient du défilement réel), seuls la taille du portail, son tour et les étincelles sont amortis.
     const TENUE = 0.6;          // temps d'arrêt sur le club, une fois le portail ouvert (part d'écran de défilement)
-    const AMORTI_MS = 1;        // mobile : 60 → 1 ms, l'ouverture suit le doigt sans retard (au doigt, l'amorti se ressentait comme du lag)
+    const AMORTI_MS = 60;       // plus grand = ouverture plus « coulée » (essai à 1 ms retiré le 2026-10-21 : pire au doigt)
     // Trois sortes de particules, chacune avec sa direction, sa vitesse et sa taille tirées une fois pour toutes :
     // des traînées de lumière (lignes), une poussière fine (points), des éclats en losange qui jaillissent des pointes.
     const hasard = (min, max) => min + Math.random() * (max - min);
@@ -6863,7 +6861,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // N'écrit une valeur que si elle change (une écriture inutile oblige le navigateur à tout revérifier).
     const poser = (el, nom, valeur) => { if (el.style.getPropertyValue(nom) !== valeur) el.style.setProperty(nom, valeur); };
     function poserTransformClub(y, h) {
-      const t = 'scale(' + echelleClub(yLisse, h).toFixed(4) + ')'; // la position, elle, est tenue par le navigateur (sticky)
+      const t = 'translateY(' + (Math.min(y, h * (1 + TENUE)) - h).toFixed(1) + 'px) scale(' + echelleClub(yLisse, h).toFixed(4) + ')';
       if (club.style.transform !== t) club.style.transform = t;
     }
     // (Allégé : pas de zoom du club, un calque plein écran redimensionné à chaque image coûte trop sans carte graphique.)
