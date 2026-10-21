@@ -4726,15 +4726,19 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 .mo-scene[data-holo-tel] .moj-holo--fiche::before { content: ""; position: absolute; left: 0; right: 0; top: var(--holo-haut); height: var(--holo-h); background: var(--couleur-nuit); opacity: 0; }
 .mo-scene[data-holo-tel] .moj-holo--fiche.visible::before { animation: moj-holo-allumage .6s linear .42s both; }
 .mo-scene[data-calme][data-holo-tel] .moj-holo--fiche.visible::before { animation: none; opacity: .9; }
-/* LE PIVOT (glisser ou flèches, 2026-10-22) : la carte reste couchée, l'hologramme tourne comme un présentoir. La bannière
-   actuelle (une copie) pivote autour de l'axe vertical et sort du côté du geste, la suivante entre de l'autre côté (0,45 s).
-   --sens : 1 = vers le suivant (sortie à gauche), -1 = vers le précédent. */
-.mo-scene[data-holo-tel] .moj-holo--fiche { perspective: 900px; }
-.mo-scene[data-holo-tel] .moj-holo.visible .moj-holo-projection.moj-pivot-entre { animation: moj-pivot-entre .45s cubic-bezier(.2, .7, .3, 1) both; }
-.mo-scene[data-holo-tel] .moj-holo.visible .moj-holo-projection.moj-pivot-sort { animation: moj-pivot-sort .45s cubic-bezier(.5, 0, .8, .4) both; pointer-events: none; }
-.moj-pivot-sort * { pointer-events: none !important; }
-@keyframes moj-pivot-sort { from { opacity: .9; transform: none; } to { opacity: 0; transform: translateX(calc(var(--sens, 1) * -55%)) rotateY(calc(var(--sens, 1) * -75deg)); } }
-@keyframes moj-pivot-entre { from { opacity: 0; transform: translateX(calc(var(--sens, 1) * 55%)) rotateY(calc(var(--sens, 1) * 75deg)); } to { opacity: .9; transform: none; } }
+/* LE PIVOT (glisser ou flèches, 2026-10-22, revu : jamais deux bannières à la fois) : la carte reste couchée, la bannière tourne
+   sur elle-même comme un panneau. Elle tourne jusqu'à 90° (vue par la tranche, invisible) dans le sens du geste en 0,2 s, on
+   change de joueur à cet instant, puis elle revient de l'autre côté jusqu'à 0° en 0,25 s, avec un léger rebond. Son fond de nuit
+   et les réseaux tournent avec elle. --sens : 1 = vers le suivant (geste vers la gauche), -1 = vers le précédent. */
+.mo-scene[data-holo-tel] .moj-holo--fiche { perspective: 900px; perspective-origin: 50% calc(var(--holo-haut) + var(--holo-h) / 2); }
+.mo-scene[data-holo-tel] .moj-holo--fiche.visible:is(.pivot-sort, .pivot-entre)::before { opacity: .9; }
+.mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-sort .moj-holo-projection, .mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-sort::before {
+  animation: moj-pivot-sort .2s cubic-bezier(.55, 0, 1, .45) forwards; }
+.mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-entre .moj-holo-projection, .mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-entre::before {
+  animation: moj-pivot-entre .25s cubic-bezier(.2, .9, .3, 1.12) both; }
+@keyframes moj-pivot-sort { from { transform: none; } to { transform: rotateY(calc(var(--sens, 1) * -90deg)); } }
+@keyframes moj-pivot-entre { from { transform: rotateY(calc(var(--sens, 1) * 90deg)); } to { transform: none; } }
+.mo-scene[data-holo-tel] .moj-holo--fiche.pivot-entre .mob-bouton { animation: none; opacity: 1; } /* les réseaux arrivent avec la bannière, sans attendre leur allumage */
 /* Pendant le pivot, les cartes changent sans animation (la nouvelle arrive déjà couchée) ; son liseré lance juste un éclat. */
 .mo-scene[data-pivot] .moj-carte, .mo-scene[data-pivot] .moj-carte * { transition: none !important; }
 .mo-scene[data-holo-tel][data-holo] .moj-carte.active.eclat .moj-contour { animation: moj-eclat .5s ease-out; }
@@ -6071,6 +6075,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     let entreeSite = false;       // téléphone : on a ajouté l'entrée d'historique « hors accueil » (voir HISTORIQUE)
     let versAccueil = false;      // téléphone : retour vers l'accueil en cours (on n'ajoute pas d'entrée pendant ce trajet)
     let suiviDefilement = false;  // téléphone : la carte suit le défilement sans délai (voir le défilement plus bas)
+    let minuteriePivot = 0;       // téléphone : milieu du pivot de la bannière (changement de joueur)
     let aGlisse = false;          // le visiteur a déjà glissé d'un joueur à l'autre : plus de démonstration (pour toute la visite)
     let holoCarte = -1;           // la carte actuellement projetée
     let idImage = 0, idLecture = 0, visible = true;
@@ -6600,8 +6605,8 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     }
     function cacherHologramme() {
       holoCarte = -1;
-      holo.querySelectorAll('.moj-pivot-sort').forEach(copie => copie.remove()); // (téléphone : la bannière qui sortait d'un pivot)
-      holo.querySelector('.moj-holo-projection').classList.remove('moj-pivot-entre'); // au prochain allumage : l'allumage, pas le pivot
+      clearTimeout(minuteriePivot);
+      holo.classList.remove('pivot-sort', 'pivot-entre'); // (téléphone) au prochain allumage : l'allumage, pas le pivot
       holo.classList.remove('visible');
       if (holoAgent) holoAgent.classList.remove('visible');
       delete scene.dataset.holo;
@@ -7041,20 +7046,17 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       delete scene.dataset.pivot;
       cartes[i].classList.add('eclat');
       setTimeout(() => cartes[i].classList.remove('eclat'), 500);
-      // L'hologramme : une copie de la bannière actuelle sort, la vraie reçoit le joueur suivant et entre.
-      const projection = holo.querySelector('.moj-holo-projection');
-      holo.querySelectorAll('.moj-pivot-sort').forEach(copie => copie.remove());
-      const sortante = projection.cloneNode(true);
-      sortante.classList.remove('moj-pivot-entre');
-      sortante.classList.add('moj-pivot-sort');
-      holo.style.setProperty('--sens', String(sens));
-      holo.appendChild(sortante);
-      setTimeout(() => sortante.remove(), 460);
-      afficherBanniere(i);
+      // L'hologramme : la bannière tourne jusqu'à la tranche (0,2 s), change de joueur, puis revient de l'autre côté.
       holoCarte = i;
-      projection.classList.remove('moj-pivot-entre');
-      void projection.offsetWidth; // pour rejouer l'entrée à chaque pivot
-      projection.classList.add('moj-pivot-entre');
+      clearTimeout(minuteriePivot);
+      holo.style.setProperty('--sens', String(sens));
+      holo.classList.remove('pivot-sort', 'pivot-entre');
+      void holo.offsetWidth; // pour rejouer la rotation à chaque pivot, même enchaîné
+      holo.classList.add('pivot-sort');
+      minuteriePivot = setTimeout(() => {
+        afficherBanniere(i);
+        holo.classList.replace('pivot-sort', 'pivot-entre');
+      }, 200);
       defilementChoix = defilement.scrollTop;
     }
     const zoneJoueurs = scene.querySelector('.moj-zone');
@@ -7796,6 +7798,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         if (nos) history.go(-nos);
         arreterBrouillage();
         clearTimeout(minuterieRetournement);
+        clearTimeout(minuteriePivot);
         clearTimeout(minuterieApercu);
         clearTimeout(minuterieEntree);
         arreterLecture();
