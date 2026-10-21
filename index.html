@@ -4884,8 +4884,8 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 /* Au survol, la ligne se remplit de métal de gauche à droite (seul transform change). */
 .mo-poste::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: scaleX(0); transform-origin: 0 50%; transition: transform .5s cubic-bezier(.2, .8, .2, 1);
   background: linear-gradient(180deg, var(--metal-clair), var(--metal-moyen) 70%, color-mix(in srgb, var(--metal-moyen) 70%, var(--metal-sombre))); }
-.mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume), .mo-poste:focus-visible { color: var(--couleur-nuit); }
-.mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume)::before, .mo-poste:focus-visible::before { transform: none; }
+.mo-poste:is(:hover:where(:not([data-tactile] *))), .mo-poste:focus-visible { color: var(--couleur-nuit); }
+.mo-poste:is(:hover:where(:not([data-tactile] *)))::before, .mo-poste:focus-visible::before { transform: none; }
 .mo-poste-num { font: 800 19px/1 var(--police-titre, sans-serif); letter-spacing: .04em; color: var(--metal-clair); transition: color .3s; }
 .mo-poste-nom { font: 900 clamp(36px, calc(4.6 * var(--mo-vw)), 70px)/.95 var(--police-titre, sans-serif); text-transform: uppercase; letter-spacing: .01em; transition: letter-spacing .5s cubic-bezier(.2, .8, .2, 1); }
 .mo-poste-texte { font: 400 18px/1.5 var(--mo-police-texte); opacity: .84; }
@@ -4894,10 +4894,10 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
   box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 60%, transparent); transition: background .3s, color .3s; }
 .mo-pastille--ouvert { color: var(--couleur-nuit); box-shadow: none; background: linear-gradient(180deg, var(--metal-clair), var(--metal-moyen) 70%, color-mix(in srgb, var(--metal-moyen) 70%, var(--metal-sombre))); }
 .mo-poste-fleche { font: 400 28px/1 var(--mo-police-texte); opacity: .5; transform: translateX(-6px); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1), opacity .3s; }
-.mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume) .mo-poste-num { color: var(--couleur-nuit); }
-.mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume) .mo-poste-nom { letter-spacing: .04em; }
-.mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume) .mo-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
-.mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume) .mo-poste-fleche { opacity: 1; transform: translateX(4px); }
+.mo-poste:is(:hover:where(:not([data-tactile] *))) .mo-poste-num { color: var(--couleur-nuit); }
+.mo-poste:is(:hover:where(:not([data-tactile] *))) .mo-poste-nom { letter-spacing: .04em; }
+.mo-poste:is(:hover:where(:not([data-tactile] *))) .mo-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
+.mo-poste:is(:hover:where(:not([data-tactile] *))) .mo-poste-fleche { opacity: 1; transform: translateX(4px); }
 .mo-parcours-titre { margin: clamp(72px, calc(11 * var(--mo-vh)), 120px) 0 0; font: 500 clamp(22px, calc(2 * var(--mo-vw)), 27px)/1.2 var(--mo-police-texte); color: var(--metal-clair); }
 .mo-parcours { margin: 22px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, calc(3 * var(--mo-vw)), 48px); }
 .mo-parcours li { position: relative; display: grid; align-content: start; gap: 10px; padding-top: 18px; border-top: 2px solid color-mix(in srgb, var(--couleur-texte) 30%, transparent); }
@@ -5104,7 +5104,7 @@ html[data-qualite="minimal"] .mo-accueil .mo-mot { animation: none; }
   background: radial-gradient(140px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 75%, transparent), transparent 70%); }
 .mo-bouton--contour::after { background: radial-gradient(140px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 20%, transparent), transparent 70%); }
 .mo-poste::after { background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 70%, transparent), transparent 70%); }
-.mo-bouton:is(:hover:where(:not([data-tactile] *)), .mo-appui)::after, .mo-poste:is(:hover:where(:not([data-tactile] *)), .mo-allume)::after { opacity: 1; }
+.mo-bouton:is(:hover:where(:not([data-tactile] *)), .mo-appui)::after, .mo-poste:is(:hover:where(:not([data-tactile] *)))::after { opacity: 1; }
 .mo-bouton:active, .mo-nav-cta:active { transform: scale(.95); transition-duration: .08s; }
 .mo-bouton svg { transition: transform .45s cubic-bezier(.3, 1.8, .5, 1); }
 .mo-bouton:hover:where(:not([data-tactile] *)) svg { transform: rotate(-12deg) scale(1.2); }
@@ -5398,6 +5398,47 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-bouton--discord {
 .mo-scene[data-barre] .mo-pied { padding-bottom: 104px; } /* la barre ne cache pas le bas de la page */
 .mo-scene[data-calme] .mo-barre-actions, .mo-scene[data-calme] .mo-appui { transition: none; }
 html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -webkit-backdrop-filter: none; backdrop-filter: none; background: var(--couleur-nuit); }
+
+/* ============ MOBILE · RECRUTEMENT (2026-10-21, choix A + B + C de Duncan) ============
+   Plus rien ne change au défilement. Chaque poste a l'air touchable au repos (chevron dans un rond d'or) ; pendant l'appui,
+   l'en-tête se remplit d'or ; toucher déplie le poste (un seul ouvert à la fois). À l'arrivée de la liste, les postes entrent
+   une seule fois en cascade : le trait se dessine, le titre glisse en place. */
+.mo-poste { display: block; padding: 0; overflow: visible; border-bottom: 0;
+  background: linear-gradient(color-mix(in srgb, var(--couleur-texte) 30%, transparent), color-mix(in srgb, var(--couleur-texte) 30%, transparent)) 0 100% / 0 1px no-repeat;
+  transition: opacity .8s ease-out, transform .9s cubic-bezier(.2, .8, .2, 1), background-size .9s cubic-bezier(.2, .8, .2, 1);
+  transition-delay: calc(var(--k, 0) * 80ms), calc(var(--k, 0) * 80ms), calc(var(--k, 0) * 80ms + 200ms); }
+.mo-poste.vu, .mo-scene[data-calme] .mo-poste { background-size: 100% 1px; }
+.mo-poste::before, .mo-poste::after { display: none; }
+.mo-poste .mo-poste-nom { transition: transform .9s cubic-bezier(.2, .8, .2, 1) calc(var(--k, 0) * 80ms + 120ms); }
+.mo-poste.mo-revele:not(.vu) .mo-poste-nom { transform: translateX(-28px); }
+.mo-poste-tete { position: relative; isolation: isolate; overflow: hidden; width: 100%; box-sizing: border-box; display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "num statut" "nom nom" "texte texte"; align-items: center; gap: 10px 20px; padding: 22px 10px; border: 0; margin: 0; cursor: pointer;
+  font: inherit; text-align: left; color: var(--couleur-texte); background: none; -webkit-tap-highlight-color: transparent; transition: color .25s; }
+.mo-poste-tete:focus-visible { outline: 2px solid var(--metal-clair); outline-offset: -2px; }
+.mo-poste-tete .mo-poste-num { grid-area: num; } .mo-poste-tete .mo-poste-nom { grid-area: nom; } .mo-poste-tete .mo-poste-texte { grid-area: texte; } .mo-poste-tete .mo-poste-statut { grid-area: statut; }
+.mo-poste-chevron { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--metal-moyen); transition: transform .4s cubic-bezier(.3, 1.4, .5, 1), box-shadow .25s; }
+.mo-poste-chevron::before { content: ""; width: 8px; height: 8px; margin-top: -4px; border-right: 2px solid var(--metal-clair); border-bottom: 2px solid var(--metal-clair); transform: rotate(45deg); }
+/* (A) L'appui : l'en-tête se remplit d'or de gauche à droite, le temps du toucher. Sur ordinateur, le survol fait de même. */
+.mo-poste-tete::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: scaleX(0); transform-origin: 0 50%; transition: transform .35s cubic-bezier(.2, .8, .2, 1); background: var(--metal-moyen); }
+.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui)::before { transform: none; }
+.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui), .mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-poste-num { color: var(--couleur-nuit); }
+.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
+.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-poste-chevron { box-shadow: inset 0 0 0 1.5px var(--couleur-nuit); }
+.mo-poste-tete:is(:hover:where(:not([data-tactile] *)), .mo-appui) .mo-poste-chevron::before { border-color: var(--couleur-nuit); }
+/* (C) L'accordéon : la hauteur s'ouvre en douceur (grille 0fr → 1fr), le chevron se retourne. */
+.mo-poste-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2, .8, .2, 1); }
+.mo-poste-detail > div { overflow: hidden; display: grid; gap: 18px; padding: 0 10px; visibility: hidden; transition: padding .45s cubic-bezier(.2, .8, .2, 1), visibility 0s .45s; }
+.mo-poste.ouvert .mo-poste-detail { grid-template-rows: 1fr; }
+.mo-poste.ouvert .mo-poste-detail > div { padding: 4px 10px 28px; visibility: visible; transition-delay: 0s; }
+.mo-poste.ouvert .mo-poste-chevron { transform: rotate(180deg); }
+.mo-poste.ouvert .mo-poste-num { color: var(--metal-reflet); }
+.mo-poste-bloc small, .mo-poste-rythme small { display: block; margin-bottom: 8px; font: 700 12px/1 var(--mo-police-texte); letter-spacing: .16em; text-transform: uppercase; color: var(--metal-moyen); }
+.mo-poste-bloc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.mo-poste-bloc li { position: relative; padding-left: 20px; font: 400 16px/1.5 var(--mo-police-texte); color: color-mix(in srgb, var(--couleur-texte) 88%, transparent); }
+.mo-poste-bloc li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 7px; height: 7px; transform: rotate(45deg); background: var(--metal-moyen); }
+.mo-poste-rythme { margin: 0; font: 500 16px/1.5 var(--mo-police-texte); color: var(--couleur-texte); }
+.mo-poste-candidater { justify-self: start; }
+.mo-scene[data-calme] .mo-poste, .mo-scene[data-calme] .mo-poste *, .mo-scene[data-calme] .mo-poste *::before { transition: none !important; }
 `,
 
   monter(conteneur, reglages, options) {
@@ -5421,7 +5462,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     scene.className = 'mo-scene';
     if (calme) scene.dataset.calme = '1';
     // MOBILE (2026-10-21) : écran tactile (ou premier appui du doigt) → « data-tactile » : les effets de survol sont coupés,
-    // sinon ils restent collés après un appui. Le doigt a ses propres réponses (.mo-appui, .mo-allume).
+    // sinon ils restent collés après un appui. Le doigt a ses propres réponses (.mo-appui).
     if (matchMedia('(hover: none)').matches) scene.dataset.tactile = '';
     scene.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') scene.dataset.tactile = ''; }, { capture: true });
     // Le dos du maillot : la nuque et l'ourlet. Le PSEUDO est remplacé par la zone des cartes.
@@ -5570,6 +5611,25 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
           '</div>' +
         '</div>' +
       '</section>';
+    // Les postes du recrutement. MAQUETTE : missions, profils et rythmes INVENTÉS (2026-10-21), à confirmer avec le club.
+    const POSTES = [
+      { nom: 'Joueur remplaçant', texte: 'Tous rôles, pour les pracs et les absences en saison.', statut: 'Ouvert',
+        missions: ['Jouer les pracs de la semaine avec les titulaires.', 'Remplacer un titulaire en match Premier, au pied levé.', 'Maîtriser deux rôles et les cartes de l\'acte en cours.'],
+        profil: ['Ascendant 3 ou plus, en progression.', 'Micro, calme en communication, à l\'écoute du capitaine.', '16 ans minimum.'],
+        rythme: 'Trois soirs par semaine (pracs mardi et jeudi, matchs le samedi).' },
+      { nom: 'Coach · analyste', texte: 'Revue des matchs, préparation des cartes de la semaine.', statut: 'Ouvert',
+        missions: ['Revoir les matchs du samedi et en tirer trois points de travail.', 'Préparer la carte de la semaine : placements, stratégies adverses.', 'Animer le débrief de 30 minutes avant chaque prac.'],
+        profil: ['Très bonne lecture du jeu ; un passé Immortel est un plus.', 'Pédagogue : on explique, on ne crie pas.', 'À l\'aise avec les outils de revue (tracker, VOD).'],
+        rythme: 'Deux soirs par semaine, plus les matchs du samedi.' },
+      { nom: 'Créateur de contenu', texte: 'Clips, montages, couverture des LAN.', statut: 'Ouvert',
+        missions: ['Sortir les meilleures actions de chaque match sur TikTok et X.', 'Monter un récap de la semaine, en une minute.', 'Couvrir la LAN de Draguignan : coulisses, réactions, photos.'],
+        profil: ['Maîtrise d\'un logiciel de montage (Premiere, CapCut, DaVinci…).', 'Sens du rythme et des formats courts.', 'Connaît la scène Valorant et son vocabulaire.'],
+        rythme: 'Souple : un récap par semaine et les jours de match.' },
+      { nom: 'Graphiste', texte: 'Annonces de match, visuels des réseaux.', statut: 'Bénévole',
+        missions: ['Créer les affiches de match, de la W1 à la W7.', 'Publier les résultats en visuel le samedi soir.', 'Tenir à jour le kit des réseaux (bannières, avatars).'],
+        profil: ['Photoshop, Illustrator ou Figma.', 'Respecte la direction artistique du club : or et violet.', 'Un portfolio, même court.'],
+        rythme: 'Deux à trois visuels par semaine, préparés à l\'avance.' }
+    ];
     const sectionsSite =
       // PLANNING (DA) : à gauche, le titre et le prochain match en très grand (compte à rebours) ; à droite, les 7 semaines.
       '<section class="mo-section mo-section--suite" data-section="planning">' +
@@ -5595,11 +5655,21 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       '<section class="mo-section mo-recrue" data-section="recrutement"><div class="mo-cadre">' +
         '<header class="mo-entete mo-recrue-tete mo-revele"><p class="mo-sur-titre"><b>05</b>Recrutement · saison 2026-27</p><h2 class="mo-titre">Rejoindre<br>MANSUR</h2>' +
           '<p class="mo-intro">Le club grandit. Joueurs, staff ou créateurs : si tu veux porter le maillot, choisis ton poste et candidate en trois temps.</p></header>' +
+        // ACCORDÉON (mobile, 2026-10-21, choix de Duncan) : toucher un poste déplie ses détails. Contenu INVENTÉ pour la maquette.
         '<div class="mo-postes">' +
-          [['Joueur remplaçant', 'Tous rôles, pour les pracs et les absences en saison.', 'Ouvert'], ['Coach · analyste', 'Revue des matchs, préparation des cartes de la semaine.', 'Ouvert'],
-           ['Créateur de contenu', 'Clips, montages, couverture des LAN.', 'Ouvert'], ['Graphiste', 'Annonces de match, visuels des réseaux.', 'Bénévole']]
-            .map(([b, s, i], k) => lienClub(liens.discord, 'mo-poste mo-revele', '<span class="mo-poste-num">0' + (k + 1) + '</span><b class="mo-poste-nom">' + b + '</b><span class="mo-poste-texte">' + s + '</span>' +
-              '<span class="mo-poste-statut"><i class="mo-pastille' + (i === 'Ouvert' ? ' mo-pastille--ouvert' : '') + '">' + i + '</i><span class="mo-poste-fleche" aria-hidden="true">→</span></span>', 'Candidater : ' + b)).join('') +
+          POSTES.map((p, k) =>
+            '<div class="mo-poste mo-revele">' +
+              '<button type="button" class="mo-poste-tete" aria-expanded="false" aria-controls="mo-poste-' + k + '">' +
+                '<span class="mo-poste-num">0' + (k + 1) + '</span><b class="mo-poste-nom">' + p.nom + '</b><span class="mo-poste-texte">' + p.texte + '</span>' +
+                '<span class="mo-poste-statut"><i class="mo-pastille' + (p.statut === 'Ouvert' ? ' mo-pastille--ouvert' : '') + '">' + p.statut + '</i><span class="mo-poste-chevron" aria-hidden="true"></span></span>' +
+              '</button>' +
+              '<div class="mo-poste-detail" id="mo-poste-' + k + '" role="region" aria-label="' + p.nom + '"><div>' +
+                '<div class="mo-poste-bloc"><small>Missions</small><ul>' + p.missions.map(m => '<li>' + m + '</li>').join('') + '</ul></div>' +
+                '<div class="mo-poste-bloc"><small>Profil</small><ul>' + p.profil.map(m => '<li>' + m + '</li>').join('') + '</ul></div>' +
+                '<p class="mo-poste-rythme"><small>Rythme</small>' + p.rythme + '</p>' +
+                lienClub(liens.discord, 'mo-bouton mo-poste-candidater', iconeTrait('discord') + 'Candidater sur Discord', 'Candidater : ' + p.nom) +
+              '</div></div>' +
+            '</div>').join('') +
         '</div>' +
         '<h3 class="mo-parcours-titre mo-revele">Candidater en trois temps</h3>' +
         '<ol class="mo-parcours">' +
@@ -7093,9 +7163,16 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     const recul = scene.querySelector('.mo-recul'), encadreFinal = scene.querySelector('.mo-final');
     const hautDansLaPage = el => { let t = 0; for (let e = el; e && e !== defilement; e = e.offsetParent) t += e.offsetTop; return t; }; // position dans la page défilante
     const bandes = [...scene.querySelectorAll('.mo-bande')], rubansBandes = bandes.map(b => [...b.querySelectorAll('.mo-bande-ruban')]);
-    const barreActions = scene.querySelector('.mo-barre-actions'), postesRecrue = [...scene.querySelectorAll('.mo-poste')];
+    const barreActions = scene.querySelector('.mo-barre-actions');
+    // L'accordéon des postes : toucher un en-tête ouvre son poste et referme les autres ; le retoucher le referme.
+    scene.querySelectorAll('.mo-poste-tete').forEach(tete => tete.addEventListener('click', () => {
+      const poste = tete.parentElement, ouvrir = !poste.classList.contains('ouvert');
+      scene.querySelectorAll('.mo-poste.ouvert').forEach(p => { p.classList.remove('ouvert'); p.firstElementChild.setAttribute('aria-expanded', 'false'); });
+      poste.classList.toggle('ouvert', ouvrir);
+      tete.setAttribute('aria-expanded', String(ouvrir));
+    }));
     const cartesBarre = scene.querySelector('.moj-cartes');
-    let barreVisible = false, dernierYBarre = 0, posteAllume = null;
+    let barreVisible = false, dernierYBarre = 0;
     // Téléphone : la barre apparaît après l'accueil, se cache quand on descend vite (plus de 30 px d'un coup) et revient dès qu'on
     // remonte ; jamais pendant qu'un joueur est choisi ou que le tiroir est ouvert. Le poste du recrutement qui passe au centre
     // de l'écran s'allume (comme au survol sur ordinateur).
@@ -7111,13 +7188,6 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       else if (descente > 30) barreVisible = false;
       dernierYBarre = y;
       barreActions.classList.toggle('visible', barreVisible);
-      const haut = hautScene;
-      // Un seul poste allumé à la fois, et sans clignoter : il s'allume quand son milieu entre dans la bande centrale de l'écran
-      // (42 % à 58 % de la hauteur) et reste allumé tant qu'il n'en sort pas largement (30 % à 70 %).
-      const milieu = p => { const b = p.getBoundingClientRect(); return (b.top + b.height / 2 - haut) / h; };
-      if (posteAllume && (milieu(posteAllume) < 0.3 || milieu(posteAllume) > 0.7)) posteAllume = null;
-      if (!posteAllume) posteAllume = postesRecrue.find(p => { const m = milieu(p); return m > 0.42 && m < 0.58; }) || null;
-      postesRecrue.forEach(p => p.classList.toggle('mo-allume', p === posteAllume));
     }
     function majNav() {
       const y = defilement.scrollTop, max = Math.max(1, defilement.scrollHeight - defilement.clientHeight);
@@ -7360,7 +7430,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     }
     // Le halo des cases « lumière » suit la souris (une seule case à la fois : celle qu'on survole).
     scene.addEventListener('pointermove', e => {
-      const caseLumiere = e.target.closest('.mo-lumiere, .mo-bouton, .mo-poste');
+      const caseLumiere = e.target.closest('.mo-lumiere, .mo-bouton, .mo-poste-tete');
       if (!caseLumiere) return;
       const b = caseLumiere.getBoundingClientRect();
       caseLumiere.style.setProperty('--mx', (e.clientX - b.left) + 'px');
@@ -7370,7 +7440,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     let minuterieAppui = 0, enAppui = null;
     scene.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse') return;
-      const el = e.target.closest('.mo-bouton, .mo-nav-cta, .mo-poste, .mo-canal, .mo-semaine, .mo-reseau');
+      const el = e.target.closest('.mo-bouton, .mo-nav-cta, .mo-poste-tete, .mo-canal, .mo-semaine, .mo-reseau');
       if (!el) return;
       clearTimeout(minuterieAppui); enAppui?.classList.remove('mo-appui');
       const b = el.getBoundingClientRect();
@@ -7381,7 +7451,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     scene.addEventListener('pointerup', finAppui);
     scene.addEventListener('pointercancel', finAppui);
     scene.addEventListener('pointerdown', e => {
-      if (calme || !e.target.closest('.mo-bouton, .mo-nav-cta, .mo-reseau, .mo-nav-lien, .mo-nav-tiroir-lien, .mo-poste, .mo-semaine')) return;
+      if (calme || !e.target.closest('.mo-bouton, .mo-nav-cta, .mo-reseau, .mo-nav-lien, .mo-nav-tiroir-lien, .mo-poste-tete, .mo-semaine')) return;
       const b = scene.getBoundingClientRect(), gerbe = document.createElement('span');
       gerbe.className = 'mo-gerbe';
       gerbe.style.left = (e.clientX - b.left) + 'px';
