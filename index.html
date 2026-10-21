@@ -466,12 +466,13 @@ const EffetSiteMansurDA = {
   },
   // Les liens du club. MAQUETTE : seul le Twitch de Medhielm est connu ; les autres sont à demander à l'asso (bouton « bientôt »).
   liensClub: { discord: '', twitch: '', x: '', tiktok: '', contact: '' },
-  // Le contour de l'étoile du logo retenu par le vote (E1 · P2 Détail), dans un carré de 256 : le contour d'origine et deux trous.
-  // Le logo (logo-v7, variante M, 2026-10-20) : le mim (contour et œil en croissant) d'A5 · P5 ; l'étoile E1 y est découpée,
-  // centrée en (108, 108) à l'échelle 0,32, détourée d'un trait de 1,3 et marquée d'un point au centre (image de Duncan).
+  // Le logo (2026-10-21) : le mim (contour et œil en croissant) d'A5 · P5 ; l'étoile arabe à huit branches y est posée,
+  // pleine, centrée en (108, 108) à l'échelle 0,32, le mim détouré autour d'elle et un petit rond percé au centre.
   logoMim: 'M162.8784134469722 59.823930025160365Q192.0354748198596 60.68149065377469 202.75498267753875 131.00146220015017Q203.6125433061531 135.718045657529 201.46864173461728 138.290727543372L177.88572444772305 167.87656923056656Q174.88426224757288 172.16437237363823 169.73889847588686 170.87803143071673Q136.72281427423496 161.44486451595904 111.42477573011209 140.00584880060066Q91.27210095767522 196.1760699748396 62.972600213402174 196.1760699748396Q59.971138013252 196.1760699748396 56.54089549879466 187.1716833743891Q49.68041046987998 165.7326676590307 56.11211518448749 159.72974325873037Q58.6847970703305 157.58584168719455 62.972600213402174 157.58584168719455Q82.69649467153188 157.15706137288737 100.70526787243291 133.57414408599317Q106.70819227273326 125.42731811415698 128.5759883023988 86.40830951220474Q143.58329930314966 59.823930025160365 162.8784134469722 59.823930025160365Z M132.00623081685615 101.84440082726276Q147.013541817607 116.42293151370646 170.5964591045012 121.56829528539247Q171.02523941880838 103.13074177018427 158.16182998959334 97.12781736988393Q145.2984205603783 91.12489296958358 132.00623081685615 101.84440082726276Z',
   etoileDansLogo: { cx: 108, cy: 108, k: 0.32 },
-  etoileE1: 'M208.02 34.99 L155.56 104.77 L210.00 117.01 L161.11 131.55 L168.43 159.44 L136.72 142.88 L126.00 221.01 L112.22 150.27 L80.75 162.27 L89.04 132.32 L46.00 117.01 L98.28 105.53 L89.23 80.24 L112.99 85.60 L126.00 61.01 L137.48 89.30 Z M126 110 L134 118 L126 126 L118 118 Z M136.84 109.02 L194.47 50.70 L192.47 48.74 L134.84 107.06 Z',
+  // L'étoile arabe à huit branches (rub el hizb : deux carrés croisés), centrée en 126 118, pointes à 72, creux à 55,1.
+  // (Remplace l'étoile E1 le 2026-10-21, choix de Duncan : planche « grande étoile », proposition 2.)
+  etoileArabe: 'M126.00 46.00 L147.09 67.09 L176.91 67.09 L176.91 96.91 L198.00 118.00 L176.91 139.09 L176.91 168.91 L147.09 168.91 L126.00 190.00 L104.91 168.91 L75.09 168.91 L75.09 139.09 L54.00 118.00 L75.09 96.91 L75.09 67.09 L104.91 67.09 Z',
   textes: {
     normal: { accroche: 'Esport · Saison 2026-27', role: 'Rôle', agent: 'Agent favori', stats: ['ACS', 'K/D', 'HS'], indice: 'Voir le joueur', retour: 'Retour', rappel: 'Retourner la carte' },
     tajine: { accroche: 'Restaurant · Tajines & couscous', role: 'Poste', agent: 'Spécialité', stats: ['Plats/jour', 'Note', 'Piquant'], indice: 'Voir le chef', retour: 'Retour', rappel: 'Retourner la carte' }
@@ -1502,7 +1503,7 @@ html[data-qualite="minimal"] .sdj-curseur, html[data-qualite="minimal"] .sdj-cur
 .sd-scene[data-calme] .sd-reseau, .sd-scene[data-calme] .sd-bouton, .sd-scene[data-calme] .sd-nav { transition: none; }
 /* ============ LE PORTAIL (2026-10-20) : on plonge dans l'étoile du logo, le club apparaît à travers elle ============
    --ouverture va de 0 (hero seul) à 1 (le club remplit l'écran), sur un écran de défilement. Pendant ce temps, le club est
-   maintenu en haut de l'écran et découpé en forme d'étoile E1 (calculée par le code : elle part du cœur du logo et grandit
+   maintenu en haut de l'écran et découpé en forme d'étoile arabe (calculée par le code : elle part du cœur du logo et grandit
    jusqu'à dépasser les coins de l'écran) ; un contour de métal souligne le bord du portail. Le contenu du hero grossit et
    s'efface : on passe à travers. À 1, la découpe disparaît et le club défile normalement. Mode calme : rien de tout ça,
    le hero et le club se suivent comme deux sections ordinaires. */
@@ -1548,9 +1549,9 @@ html[data-qualite="minimal"] .sd-portail :is(line, circle, .sd-p-halo, .sd-p-ref
 .sd-logo-entree, .sd-logo-flotte { transform-origin: 108px 108px; } /* le cœur de l'étoile : le logo tourne autour d'elle */
 .sd-logo-entree { animation: sd-logo-entree 1.5s cubic-bezier(.16, 1, .3, 1) .1s backwards; }
 @keyframes sd-logo-entree { from { opacity: 0; scale: .62; rotate: -32deg; filter: blur(5px); } }
-/* Le contour de l'étoile se trace à l'entrée (sa longueur : 247 unités du logo). */
-.sd-logo-entree path[fill="none"] { stroke-dasharray: 250; animation: sd-trace-etoile 1.7s cubic-bezier(.65, 0, .25, 1) .3s backwards; }
-@keyframes sd-trace-etoile { from { stroke-dashoffset: 250; } }
+/* L'étoile arrive en tournant d'un huitième de tour (elle retombe sur elle-même) et se pose au centre du mim. */
+.sd-logo-etoile { transform-box: fill-box; transform-origin: center; animation: sd-entree-etoile 1.7s cubic-bezier(.16, 1, .3, 1) .3s backwards; }
+@keyframes sd-entree-etoile { from { scale: 0; rotate: -135deg; } }
 .sd-logo-flotte { animation: sd-flotte-etoile 7s ease-in-out 1.6s infinite; transition: scale .5s cubic-bezier(.3, 1.6, .5, 1);
   transform: translate(calc(var(--sd-px, 0) * var(--sd-flotte, 1) * 6px), calc(var(--sd-py, 0) * var(--sd-flotte, 1) * 4px)); }
 .sd-logo:hover .sd-logo-flotte { scale: calc(1 + .08 * var(--sd-flotte, 1)); }
@@ -1960,14 +1961,17 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
       : '<a class="' + classe + '" href="#" data-bientot title="Lien à venir"' + (etiquette ? ' aria-label="' + etiquette + ' (lien à venir)"' : '') + '>' + contenu + '</a>';
     const liens = this.liensClub;
     const iconeTrait = nom => '<svg viewBox="0 0 24 24" aria-hidden="true">' + iconesFace[nom] + '</svg>';
-    // LE LOGO (logo-v7) : le mim, dont l'étoile E1 est découpée (masque), son contour en trait de métal, et un point au centre.
+    // LE LOGO : le mim, détouré largement autour de l'étoile arabe (masque, 1,35 fois l'étoile), l'étoile pleine percée
+    // d'un petit rond au centre. Le cercle invisible marque le cœur : le portail s'y repère (sa position à l'écran).
     const place = this.etoileDansLogo;
-    const etoileDuLogo = this.etoileE1.split('Z')[0].replace(/([\d.]+) ([\d.]+)/g, (_, x, y) =>
-      (place.cx + (x - 126) * place.k).toFixed(2) + ' ' + (place.cy + (y - 118) * place.k).toFixed(2)) + 'Z';
+    const etoileA = k => this.etoileArabe.replace(/([\d.]+) ([\d.]+)/g, (_, x, y) =>
+      (place.cx + (x - 126) * k).toFixed(2) + ' ' + (place.cy + (y - 118) * k).toFixed(2));
+    const etoileDuLogo = etoileA(place.k);
+    const trouCoeur = 'M' + (place.cx - 4) + ' ' + place.cy + 'a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z';
     const formesLogo = (peinture, masque) => '<path fill="' + peinture + '" fill-rule="evenodd" mask="url(#' + masque + ')" d="' + this.logoMim + '"/>' +
-      '<path fill="none" stroke="' + peinture + '" stroke-width="1.3" stroke-linejoin="miter" d="' + etoileDuLogo + '"/><circle cx="' + place.cx + '" cy="' + place.cy + '" r="2.2" fill="' + peinture + '"/>';
+      '<path class="sd-logo-etoile" fill="' + peinture + '" fill-rule="evenodd" d="' + etoileDuLogo + trouCoeur + '"/><circle cx="' + place.cx + '" cy="' + place.cy + '" r="4" fill="none"/>';
     const degradeOr = id => '<linearGradient id="' + id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--metal-sombre)"/><stop offset=".4" style="stop-color:var(--metal-moyen)"/><stop offset=".62" style="stop-color:var(--metal-reflet)"/><stop offset="1" style="stop-color:var(--metal-clair)"/></linearGradient>';
-    const masqueEtoile = id => '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256"><rect width="256" height="256" fill="#fff"/><path fill="#000" d="' + etoileDuLogo + '"/></mask>';
+    const masqueEtoile = id => '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="0" y="0" width="256" height="256"><rect width="256" height="256" fill="#fff"/><path fill="#000" d="' + etoileA(place.k * 1.35) + '"/></mask>';
     const etoileLogo = (id, classe) => '<svg class="' + classe + '" viewBox="45 50 166 155" aria-hidden="true"><defs>' + degradeOr(id) + masqueEtoile(id + '-masque') + '</defs>' + formesLogo('url(#' + id + ')', id + '-masque') + '</svg>';
     const verrou = (id, href) => '<a class="sd-verrou" href="' + href + '" data-cible="accueil">' + etoileLogo(id, '') + '<b>MANSUR</b><i lang="ar" dir="rtl">منصور</i><small>Esport · Saison 2026-27</small></a>';
     const entete = (numero, surTitre, titre, intro) =>
@@ -2112,7 +2116,7 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
           '<div class="sd-nav-tiroir">' + LIENS_NAV.map(([c, t], k) => '<a class="sd-nav-tiroir-lien" href="#" data-cible="' + c + '" style="--k:' + k + '"><small>0' + (k + 1) + '</small>' + t + '</a>').join('') + '</div>' +
           '<span class="sd-nav-barre" aria-hidden="true"></span></div>' +
       '</nav>';
-    // Logo du hero : l'étoile E1 · P2 en dégradé de métal ; un reflet la traverse en boucle (animation SVG, coupée si
+    // Logo du hero : le mim et l'étoile arabe en dégradé de métal ; un reflet la traverse en boucle (animation SVG, coupée si
     // « refletLogo » est désactivé).
     scene.innerHTML =
       '<div class="sd-defilement" tabindex="0" role="region" aria-label="Site MANSUR (maquette) : faites défiler la page">' +
@@ -2126,8 +2130,8 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
               '</linearGradient></defs>' +
               '<g class="sd-logo-entree"><g class="sd-logo-flotte">' + formesLogo('url(#sd-or)', 'sd-or-masque') +
               '<g class="sd-brillance">' + formesLogo('url(#sd-reflet)', 'sd-or-masque') + '</g>' +
-              // l'étincelle, posée sur la grande pointe de l'étoile
-              '<path class="sd-logo-eclat" d="M134.25 72.4Q135 80.7 143.3 81.44Q135 82.2 134.25 90.5Q133.5 82.2 125.2 81.44Q133.5 80.7 134.25 72.4Z"/></g></g>' +
+              // l'étincelle, posée sur la pointe haut-droite de l'étoile
+              '<path class="sd-logo-eclat" d="M124.26 82.7Q125.01 91 133.31 91.74Q125.01 92.5 124.26 100.8Q123.51 92.5 115.21 91.74Q123.51 91 124.26 82.7Z"/></g></g>' +
             '</svg>' +
             '<p class="sd-mot">MANSUR</p>' +
             '<p class="sd-arabe" lang="ar" dir="rtl">منصور</p>' +
@@ -3196,17 +3200,17 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
       for (const id of IDS_SECTIONS.slice(1)) if (y >= debutSection(id) - h * 0.45) courante = id;
       return courante === 'contact' ? 'partenaires' : courante; // le grand appel final n'a pas de lien : on garde « Partenaires »
     }
-    // LE PORTAIL : le club, découpé en forme d'étoile E1, s'ouvre depuis le cœur du logo (voir le CSS « LE PORTAIL »).
+    // LE PORTAIL : le club, découpé en forme d'étoile arabe, s'ouvre depuis le cœur du logo (voir le CSS « LE PORTAIL »).
     const accueil = scene.querySelector('.sd-accueil'), logoAccueil = accueil.querySelector('.sd-logo'), contenuAccueil = accueil.querySelector('.sd-accueil-contenu');
     const club = scene.querySelector('[data-section="club"]');
     const portail = scene.querySelector('.sd-portail');
     const [lueurPortail, haloPortail, filPortail, refletPortail] = ['lueur', 'halo', 'fil', 'reflet'].map(n => portail.querySelector('.sd-p-' + n));
     const degradeLueur = portail.querySelector('#sd-portail-lueur');
     const pointLogo = logoAccueil.querySelector('circle'); // le point au cœur de l'étoile du logo
-    const sommets =this.etoileE1.split('Z')[0].match(/[\d.]+/g).map(Number); // le contour de l'étoile : x1 y1 x2 y2… (sans les trous)
-    const COEUR = [126, 118];  // le petit losange au centre de l'étoile, dans son carré de 256
-    const CREUX_MINI = 27;     // distance du cœur au creux le plus proche : l'étoile couvre l'écran quand ce creux dépasse les coins
-    const RAYON_POINTES = 117; // distance du cœur à la pointe la plus longue (même carré)
+    const sommets = this.etoileArabe.match(/[\d.]+/g).map(Number); // le contour de l'étoile : x1 y1 x2 y2… (pointe, creux, pointe…)
+    const COEUR = [126, 118];  // le centre de l'étoile, dans son carré de 256
+    const CREUX_MINI = 55.1;   // distance du cœur aux creux : l'étoile couvre l'écran quand ce creux dépasse les coins
+    const RAYON_POINTES = 72;  // distance du cœur aux pointes (même carré)
     let coeur = null, boiteLogo = [0, 0], echelleLogo = 1, clubDevoile = false;
     // Où est le cœur du logo à l'écran, hero au repos (mesuré une fois, puis à chaque changement de taille). La boîte du
     // logo ne bouge jamais (flottement et entrée sont dans des groupes intérieurs) : la mesure est juste à tout moment.
@@ -3227,7 +3231,7 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
       poser(accueil, '--sd-coeur-y', coeur[1].toFixed(1) + 'px');
       preparerPoussiereHero();
     }
-    // L'étoile E1 à l'échelle k, tournée de « angle », centrée en (cx, cy).
+    // L'étoile arabe à l'échelle k, tournée de « angle », centrée en (cx, cy).
     const formeEtoile = (k, angle, cx, cy) => {
       const cos = Math.cos(angle), sin = Math.sin(angle);
       return sommets.reduce((d, v, i) => {
