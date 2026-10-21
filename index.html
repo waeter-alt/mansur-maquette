@@ -4325,36 +4325,42 @@ const EffetSiteMansurMobile = {
 /* Les 5 styles. Couleurs : celles des cartes (claire et sombre, toujours contrastées) et l'or du thème. */
 .moj-curseur .trace { fill: var(--moj-encre, var(--couleur-texte)); stroke: var(--moj-fond, var(--couleur-nuit)); stroke-width: 1.6; stroke-linejoin: round; }
 .moj-curseur .trace.or { fill: url(#moj-curseur-or); stroke-width: 1.4; }
-/* Le doigt (mobile, 2026-10-21) : point lumineux, anneau fin, deux ondes fines décalées (une toutes les 1,1 s), léger appui du point. */
+/* LE DOIGT ET LA CARTE, SUR UNE SEULE HORLOGE (mobile, 2026-10-21) : un cycle court de 1,3 s (2,2 s était trop long au
+   téléphone). Tout part du même instant, l'APPUI à 18 % du cycle (0,23 s) : le point s'enfonce, la carte s'écrase, son liseré
+   s'allume et les deux ondes partent de là. Avant : anticipation (la carte se soulève quand le doigt arrive) ; après : rebond
+   qui l'entraîne vers un début de retournement (16°, on aperçoit sa tranche : elle se retourne), puis elle se pose en oscillant.
+   Toutes ces animations ont la même durée et aucun décalage : elles restent calées entre elles. */
+.mo-scene { --appel: 1.3s; }
 .moj-curseur[data-style="doigt"] .d-point { fill: var(--moj-encre, var(--couleur-texte)); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 85%, transparent)); }
 .moj-curseur[data-style="doigt"] .d-anneau { fill: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 14%, transparent); stroke: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 85%, transparent); stroke-width: 1.1; }
 .moj-curseur[data-style="doigt"] .d-onde { fill: none; stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: .8; opacity: 0; transform-box: fill-box; transform-origin: center; }
-.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-onde { animation: moj-doigt-onde 2.2s cubic-bezier(.2, .6, .3, 1) infinite; }
-.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-onde2 { animation-delay: 1.1s; }
-.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-point { transform-box: fill-box; transform-origin: center; animation: moj-doigt-appui 2.2s ease-in-out infinite; }
+.moj-curseur[data-style="doigt"] :is(.d-point, .d-anneau) { transform-box: fill-box; transform-origin: center; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-point { animation: moj-doigt-appui var(--appel) ease-in-out infinite; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-anneau { animation: moj-doigt-anneau var(--appel) ease-in-out infinite; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-onde { animation: moj-doigt-onde var(--appel) cubic-bezier(.2, .6, .3, 1) infinite; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-onde2 { animation-name: moj-doigt-onde2; }
 .mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] svg { animation: none; } /* pas le « clic » de la souris */
 .moj-curseur[data-style="doigt"] i { display: none; }
-@keyframes moj-doigt-onde { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.3); opacity: 0; } }
-@keyframes moj-doigt-appui { 0%, 100% { transform: none; } 8% { transform: scale(.72); } 20% { transform: none; } }
+@keyframes moj-doigt-appui { 0%, 10% { transform: none; } 18% { transform: scale(.68); } 30%, 100% { transform: none; } }
+@keyframes moj-doigt-anneau { 0%, 10% { transform: none; } 18% { transform: scale(.88); } 30%, 100% { transform: none; } }
+@keyframes moj-doigt-onde { 0%, 17% { transform: scale(1); opacity: 0; } 18% { transform: scale(1); opacity: .95; } 62%, 100% { transform: scale(2.4); opacity: 0; } }
+@keyframes moj-doigt-onde2 { 0%, 23% { transform: scale(1); opacity: 0; } 24% { transform: scale(1); opacity: .6; } 70%, 100% { transform: scale(2); opacity: 0; } }
 .mo-scene[data-calme] .moj-curseur .d-onde { display: none; }
-.mo-scene[data-calme] .moj-curseur .d-point { animation: none; }
-/* LA CARTE RÉPOND AU DOIGT (mobile, 2026-10-21) : la carte qui porte l'indice vit au même rythme que le point de toucher
-   (cycle de 2,2 s, appui à 8 %), pour qu'on comprenne d'instinct « je touche, elle se retourne ». Trois temps, tirés des
-   principes d'animation : ANTICIPATION (elle se soulève quand le doigt arrive), ÉCRASEMENT sous l'appui, puis REBOND qui
-   l'entraîne vers un début de retournement (16°, on aperçoit sa tranche : elle se retourne) et se repose en oscillant
-   (mouvement qui continue). Le liseré doré s'allume au moment de l'appui : la réponse au geste. */
-.mo-scene[data-indice-clic] .moj-carte:not(.retournee):has(.moj-curseur[data-style="doigt"]) .moj-pivot { animation: moj-carte-appel 2.2s cubic-bezier(.3, .7, .3, 1) infinite; }
-.mo-scene[data-indice-clic] .moj-carte:not(.retournee):has(.moj-curseur[data-style="doigt"]) .moj-contour { animation: moj-carte-lueur 2.2s ease-out infinite; }
+.mo-scene[data-calme] .moj-curseur :is(.d-point, .d-anneau) { animation: none; }
+.mo-scene[data-indice-clic] .moj-carte:not(.retournee):has(.moj-curseur[data-style="doigt"]) .moj-pivot { animation: moj-carte-appel var(--appel) cubic-bezier(.3, .7, .3, 1) infinite; }
+.mo-scene[data-indice-clic] .moj-carte:not(.retournee):has(.moj-curseur[data-style="doigt"]) .moj-contour { animation: moj-carte-lueur var(--appel) ease-out infinite; }
 @keyframes moj-carte-appel {
   0% { transform: none; }
-  5% { transform: translateY(-4px) scale(1.015); }
-  9% { transform: translateY(2px) scale(.95); }
-  16% { transform: rotateY(-16deg) scale(1.03); }
-  25% { transform: rotateY(7deg) scale(1.01); }
-  33% { transform: rotateY(-2deg); }
-  42%, 100% { transform: none; }
+  10% { transform: translateY(-4px) scale(1.015); }
+  18% { transform: translateY(2px) scale(.95); }
+  33% { transform: rotateY(-16deg) scale(1.03); }
+  47% { transform: rotateY(6deg) scale(1.01); }
+  58% { transform: rotateY(-2deg); }
+  68%, 100% { transform: none; }
 }
-@keyframes moj-carte-lueur { 0%, 7% { opacity: 0; } 10% { opacity: 1; } 40%, 100% { opacity: 0; } }
+@keyframes moj-carte-lueur { 0%, 16% { opacity: 0; } 20% { opacity: 1; } 65%, 100% { opacity: 0; } }
+/* Son flottement permanent (cycle de 3,2 s) se superposait au rythme du doigt et le brouillait : coupé tant que l'indice est là. */
+.mo-scene[data-indice-clic] .moj-carte:has(.moj-curseur[data-style="doigt"]) .moj-flotte { animation: none; }
 .mo-scene[data-calme] .moj-carte .moj-pivot, .mo-scene[data-calme] .moj-carte .moj-contour { animation: none; }
 html:is([data-qualite="allege"], [data-qualite="minimal"]) .moj-carte .moj-pivot { animation: none; }
 .moj-curseur[data-style="souris"] .trace { fill: color-mix(in srgb, var(--moj-fond, var(--couleur-nuit)) 75%, transparent); stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 2.6; }
