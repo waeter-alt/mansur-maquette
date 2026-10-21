@@ -3981,10 +3981,10 @@ const EffetSiteMansurMobile = {
     { categorie: 'Équipe', id: 'equipeEntree', libelle: 'Équipe · apparition des cartes : décalage entre deux joueurs (s)', type: 'nombre', min: 0, max: 0.3, pas: 0.01, defaut: 0.09 },
     { categorie: 'Équipe', id: 'cartesDebut', libelle: 'Équipe · apparition des cartes : déclenchée quand le haut de la zone des cartes atteint (% de la hauteur d\'écran ; plus grand = plus tôt)', type: 'nombre', min: 40, max: 110, pas: 1, defaut: 100 },
     { categorie: 'Indice', id: 'indiceClic', libelle: 'Indice · curseur qui clique sur la carte de droite (jusqu\'au premier clic du visiteur)', type: 'interrupteur', defaut: true },
-    { categorie: 'Indice', id: 'curseurStyle', libelle: 'Indice · style du curseur', type: 'choix', defaut: 'fleche',
+    { categorie: 'Indice', id: 'curseurStyle', libelle: 'Indice · style du curseur', type: 'choix', defaut: 'doigt', // mobile : le doigt tactile, pas la souris (Duncan, 2026-10-21)
       options: [{ valeur: 'fleche', libelle: 'Flèche claire' }, { valeur: 'fleche-or', libelle: 'Flèche dorée' }, { valeur: 'main', libelle: 'Main (lien)' }, { valeur: 'doigt', libelle: 'Doigt tactile' }, { valeur: 'souris', libelle: 'Souris (comme le splash art)' }] },
-    { categorie: 'Indice', id: 'curseurX', libelle: 'Indice · position horizontale sur la carte (% de sa largeur ; 0 = bord gauche, 100 = bord droit)', type: 'nombre', min: -20, max: 120, pas: 1, defaut: 90 },
-    { categorie: 'Indice', id: 'curseurY', libelle: 'Indice · position verticale sur la carte (% de sa hauteur ; 0 = bord haut, 100 = bord bas)', type: 'nombre', min: -20, max: 120, pas: 1, defaut: 3 },
+    { categorie: 'Indice', id: 'curseurX', libelle: 'Indice · position horizontale sur la carte (% de sa largeur ; 0 = bord gauche, 100 = bord droit)', type: 'nombre', min: -20, max: 120, pas: 1, defaut: 50 }, // mobile : au centre de la carte, là où le doigt touche (90 → 50)
+    { categorie: 'Indice', id: 'curseurY', libelle: 'Indice · position verticale sur la carte (% de sa hauteur ; 0 = bord haut, 100 = bord bas)', type: 'nombre', min: -20, max: 120, pas: 1, defaut: 45 }, // mobile : 3 → 45
     { categorie: 'Indice', id: 'curseurRotation', libelle: 'Indice · rotation du curseur (degrés)', type: 'nombre', min: -90, max: 90, pas: 1, defaut: -23 },
     { categorie: 'Indice', id: 'curseurTaille', libelle: 'Indice · taille du curseur (% de la largeur de la carte)', type: 'nombre', min: 6, max: 50, pas: 1, defaut: 26 },
     { categorie: 'Indice', id: 'curseurCycle', libelle: 'Indice · durée d\'un clic complet (s ; plus petit = clique plus souvent)', type: 'nombre', min: 0.8, max: 6, pas: 0.1, defaut: 2.6 },
@@ -5431,7 +5431,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
 .mo-poste-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2, .8, .2, 1); }
 .mo-poste-detail > div { overflow: hidden; display: grid; gap: 18px; padding: 0 10px; visibility: hidden; transition: padding .45s cubic-bezier(.2, .8, .2, 1), visibility 0s .45s; }
 .mo-poste.ouvert .mo-poste-detail { grid-template-rows: 1fr; }
-.mo-poste.ouvert .mo-poste-detail > div { padding: 4px 10px 28px; visibility: visible; transition-delay: 0s; }
+.mo-poste.ouvert .mo-poste-detail > div { padding: 24px 10px 28px; visibility: visible; transition-delay: 0s; }
 .mo-poste.ouvert .mo-poste-chevron { transform: rotate(180deg); }
 .mo-poste-bloc small, .mo-poste-rythme small { display: block; margin-bottom: 8px; font: 700 12px/1 var(--mo-police-texte); letter-spacing: .16em; text-transform: uppercase; color: var(--metal-moyen); }
 .mo-poste-bloc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
