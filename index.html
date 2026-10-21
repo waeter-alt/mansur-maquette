@@ -3986,7 +3986,7 @@ const EffetSiteMansurMobile = {
     { categorie: 'Indice', id: 'curseurX', libelle: 'Indice · position horizontale sur la carte (% de sa largeur ; 0 = bord gauche, 100 = bord droit)', type: 'nombre', min: -20, max: 120, pas: 1, defaut: 50 }, // mobile : au centre de la carte, là où le doigt touche (90 → 50)
     { categorie: 'Indice', id: 'curseurY', libelle: 'Indice · position verticale sur la carte (% de sa hauteur ; 0 = bord haut, 100 = bord bas)', type: 'nombre', min: -20, max: 120, pas: 1, defaut: 45 }, // mobile : 3 → 45
     { categorie: 'Indice', id: 'curseurRotation', libelle: 'Indice · rotation du curseur (degrés)', type: 'nombre', min: -90, max: 90, pas: 1, defaut: -23 },
-    { categorie: 'Indice', id: 'curseurTaille', libelle: 'Indice · taille du curseur (% de la largeur de la carte)', type: 'nombre', min: 6, max: 50, pas: 1, defaut: 26 },
+    { categorie: 'Indice', id: 'curseurTaille', libelle: 'Indice · taille du curseur (% de la largeur de la carte)', type: 'nombre', min: 6, max: 50, pas: 1, defaut: 36 }, // mobile : 26 → 36 (le doigt, plus grand)
     { categorie: 'Indice', id: 'curseurCycle', libelle: 'Indice · durée d\'un clic complet (s ; plus petit = clique plus souvent)', type: 'nombre', min: 0.8, max: 6, pas: 0.1, defaut: 2.6 },
     { categorie: 'Indice', id: 'curseurAppui', libelle: 'Indice · enfoncement du curseur au clic (%)', type: 'nombre', min: 0, max: 50, pas: 1, defaut: 20 },
     { categorie: 'Indice', id: 'curseurOnde', libelle: 'Indice · intensité de l\'onde du clic (0 = aucune)', type: 'nombre', min: 0, max: 1, pas: 0.05, defaut: 0.95 },
@@ -4325,7 +4325,19 @@ const EffetSiteMansurMobile = {
 /* Les 5 styles. Couleurs : celles des cartes (claire et sombre, toujours contrastées) et l'or du thème. */
 .moj-curseur .trace { fill: var(--moj-encre, var(--couleur-texte)); stroke: var(--moj-fond, var(--couleur-nuit)); stroke-width: 1.6; stroke-linejoin: round; }
 .moj-curseur .trace.or { fill: url(#moj-curseur-or); stroke-width: 1.4; }
-.moj-curseur[data-style="doigt"] .trace { fill: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 45%, transparent); stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 1.4; }
+/* Le doigt (mobile, 2026-10-21) : point lumineux, anneau fin, deux ondes fines décalées (une toutes les 1,1 s), léger appui du point. */
+.moj-curseur[data-style="doigt"] .d-point { fill: var(--moj-encre, var(--couleur-texte)); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 85%, transparent)); }
+.moj-curseur[data-style="doigt"] .d-anneau { fill: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 14%, transparent); stroke: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 85%, transparent); stroke-width: 1.1; }
+.moj-curseur[data-style="doigt"] .d-onde { fill: none; stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: .8; opacity: 0; transform-box: fill-box; transform-origin: center; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-onde { animation: moj-doigt-onde 2.2s cubic-bezier(.2, .6, .3, 1) infinite; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-onde2 { animation-delay: 1.1s; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] .d-point { transform-box: fill-box; transform-origin: center; animation: moj-doigt-appui 2.2s ease-in-out infinite; }
+.mo-scene[data-indice-clic] .moj-curseur[data-style="doigt"] svg { animation: none; } /* pas le « clic » de la souris */
+.moj-curseur[data-style="doigt"] i { display: none; }
+@keyframes moj-doigt-onde { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.3); opacity: 0; } }
+@keyframes moj-doigt-appui { 0%, 100% { transform: none; } 8% { transform: scale(.72); } 20% { transform: none; } }
+.mo-scene[data-calme] .moj-curseur .d-onde { display: none; }
+.mo-scene[data-calme] .moj-curseur .d-point { animation: none; }
 .moj-curseur[data-style="souris"] .trace { fill: color-mix(in srgb, var(--moj-fond, var(--couleur-nuit)) 75%, transparent); stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 2.6; }
 .moj-curseur .trait { fill: none; stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 2; stroke-linecap: round; opacity: .75; }
 .moj-curseur .molette { fill: var(--moj-encre, var(--couleur-texte)); }
@@ -6043,7 +6055,8 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       fleche: { vue: [22, 26], hx: 14, hy: 8, dessin: '<path class="trace" d="M3 2V20L7.8 15.6L11.2 23.2L14.6 21.7L11.2 14.3H17.6Z"/>' },
       'fleche-or': { vue: [22, 26], hx: 14, hy: 8, dessin: '<path class="trace or" d="M3 2V20L7.8 15.6L11.2 23.2L14.6 21.7L11.2 14.3H17.6Z"/>' },
       main: { vue: [24, 28], hx: 37, hy: 9, dessin: '<path class="trace" d="M9 2.5c1.1 0 2 .9 2 2V11l.6-.1c1-.2 2 .5 2.2 1.5l.1.4.5-.1c1-.2 2 .5 2.2 1.5l.1.5.4-.1c1-.1 1.9.6 2.1 1.6l.6 3.6c.4 2.7-.9 5.4-3.3 6.6l-.6.3c-2.2 1.1-4.9.6-6.5-1.3L4 18.6c-.7-.8-.6-2 .2-2.7.8-.7 2-.6 2.7.2L7 16.3V4.5c0-1.1.9-2 2-2z"/>' },
-      doigt: { vue: [24, 24], hx: 50, hy: 50, dessin: '<circle class="trace" cx="12" cy="12" r="7"/><circle class="molette" cx="12" cy="12" r="2.2"/>' },
+      // Doigt (mobile, 2026-10-21, inspiré des sites primés) : un point lumineux, un anneau fin et deux ondes qui s'élargissent.
+      doigt: { vue: [48, 48], hx: 50, hy: 50, dessin: '<circle class="d-onde" cx="24" cy="24" r="11"/><circle class="d-onde d-onde2" cx="24" cy="24" r="11"/><circle class="d-anneau" cx="24" cy="24" r="11"/><circle class="d-point" cx="24" cy="24" r="4.5"/>' },
       souris: { vue: [48, 72], hx: 28, hy: 22, dessin: '<rect class="trace" x="3" y="3" width="42" height="66" rx="21"/><path class="bouton" d="M24 3A21 21 0 0 0 3 24V30H24Z"/><path class="trait" d="M3 30H45M24 3V30"/><rect class="molette" x="21" y="11" width="6" height="11" rx="3"/>' }
     };
     function dessinerCurseur() {
