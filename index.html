@@ -4097,11 +4097,11 @@ const EffetSiteMansurMobile = {
   css: `
 .mo-scene { position: absolute; inset: 0; --h: 600px; --long: 720px; }
 .mo-defilement { position: absolute; inset: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: thin; }
-/* POINT D'ARRÊT (2026-10-21, choix de Duncan après essai au doigt : seulement à la sortie de l'accueil) : un coup de doigt
-   lancé depuis l'accueil s'arrête quand l'étoile est ouverte sur le club, au lieu de filer plus bas. C'est le téléphone qui
-   s'en charge (aimantation native du défilement) : aucun retard. Repère invisible de 1 px, posé par le code à 1 écran. */
-.mo-scene[data-aimant] .mo-defilement { scroll-snap-type: y proximity; }
-.mo-aimant { position: absolute; left: 0; width: 1px; height: 1px; pointer-events: none; visibility: hidden; scroll-snap-align: start; scroll-snap-stop: always; }
+/* OUVERTURE EN UN GESTE (2026-10-21, choix de Duncan) : sur l'accueil, le doigt ne fait pas défiler la page (touch-action
+   posé par le code selon la position) ; un glissement joue l'ouverture de l'étoile en entier. En haut du club, seul le
+   défilement vers la suite reste libre ; un glissement vers l'accueil rejoue l'ouverture à l'envers. */
+.mo-defilement[data-geste="verrou"] { touch-action: none; }
+.mo-defilement[data-geste="seuil"] { touch-action: pan-down; }
 /* Le hero est plus haut que l'écran : le surplus est la distance de défilement de la transition. */
 .mo-hero { position: relative; height: calc(var(--h) + var(--long)); }
 /* (2026-10-21) Le haut de la scène reprend la couleur unie du bas du club, puis rejoint son halo : aucun raccord à l'arrivée. */
@@ -6770,7 +6770,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // Hors écran (onglet caché, effet défilé hors de vue) : la boucle s'arrête pour ne rien consommer.
     const observateurVisibilite = new IntersectionObserver(entrees => { visible = entrees[0].isIntersecting; demarrer(); });
     observateurVisibilite.observe(sectionHero);
-    const observateurTaille = new ResizeObserver(() => { poserUnites(); mettreEnPage(); placerAimants(); });
+    const observateurTaille = new ResizeObserver(() => { poserUnites(); mettreEnPage(); });
     (window.requestIdleCallback || setTimeout)(() => { if (!coeur && !calme) mesurerLogo(); });
     observateurTaille.observe(defilement);
     mettreEnPage();
@@ -6786,11 +6786,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     // « equipe » : on arrive quand l'équipe est entrée sur le maillot ; le lien s'allume dès que la scène du maillot arrive.
     const cible = id => id === 'accueil' ? 0 : id === 'club' ? defilement.clientHeight : id === 'equipe' ? debutHero() + longueur + 2 : (scene.querySelector('[data-section="' + id + '"]')?.offsetTop || 0);
     const debutSection = id => id === 'equipe' ? debutHero() : cible(id);
-    // Le point d'arrêt de la sortie de l'accueil (étoile ouverte sur le club). Mode calme : pas d'étoile, pas d'arrêt.
-    const aimant = calme ? null : document.createElement('i');
-    if (aimant) { aimant.className = 'mo-aimant'; defilement.appendChild(aimant); scene.dataset.aimant = ''; }
-    function placerAimants() { if (aimant) aimant.style.top = cible('club') + 'px'; }
-    placerAimants();
+
     let sectionActive = '';
     function sectionCourante() {
       const y = defilement.scrollTop, h = defilement.clientHeight;
@@ -7180,6 +7176,54 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       idGlisse = requestAnimationFrame(pas);
     }
     for (const type of ['wheel', 'touchstart']) defilement.addEventListener(type, () => { cancelAnimationFrame(idGlisse); idGlisse = 0; }, { passive: true });
+
+    // OUVERTURE EN UN GESTE (mobile, 2026-10-21, choix de Duncan après essais au doigt) : au doigt, une animation recalée par
+    // le code a toujours une image de retard et un grand élan filait au milieu du site. Sur l'accueil, le doigt ne fait donc
+    // plus défiler : un glissement vers le haut JOUE l'ouverture de l'étoile (1,2 s, le code fait défiler la page lui-même,
+    // donc tout reste synchronisé) et pose la page pile sur le club. En haut du club, glisser vers le bas la rejoue à
+    // l'envers. Partout ailleurs, défilement normal. Le verrou est un « touch-action » : aucune attente du code au toucher.
+    // Mode calme : pas d'étoile, défilement normal.
+    let idIntro = 0, doigtIntro = null, yPrecedent = 0;
+    const finIntro = () => defilement.clientHeight; // l'étoile est grande ouverte, le club en haut de l'écran
+    function majGeste() {
+      const y = defilement.scrollTop, h = finIntro();
+      const etat = calme ? '' : idIntro || y < h - 1 ? 'verrou' : y <= h + 1 ? 'seuil' : '';
+      if ((defilement.dataset.geste || '') !== etat) { if (etat) defilement.dataset.geste = etat; else delete defilement.dataset.geste; }
+    }
+    function jouerIntro(y) {
+      cancelAnimationFrame(idGlisse); idGlisse = 0; cancelAnimationFrame(idIntro);
+      const depart = defilement.scrollTop, ecart = y - depart, t0 = performance.now();
+      const duree = 1200 * Math.max(0.4, Math.abs(ecart) / finIntro());
+      const doux = k => (k < 0.5 ? 4 * k ** 3 : 1 - (-2 * k + 2) ** 3 / 2); // démarre et se pose en douceur
+      const pas = t => {
+        const k = Math.min(1, (t - t0) / duree);
+        defilement.scrollTop = depart + ecart * doux(k);
+        idIntro = k < 1 ? requestAnimationFrame(pas) : 0;
+        if (!idIntro) majGeste();
+      };
+      idIntro = requestAnimationFrame(pas);
+      majGeste();
+    }
+    if (!calme) {
+      // Le geste se lit aux événements de pointeur (ils continuent tant que le téléphone ne fait pas défiler lui-même).
+      defilement.addEventListener('pointerdown', e => { if (e.pointerType !== 'mouse') doigtIntro = { y: e.clientY, joue: false }; }, { passive: true });
+      defilement.addEventListener('pointermove', e => {
+        if (!doigtIntro || doigtIntro.joue || idIntro) return;
+        const dy = e.clientY - doigtIntro.y, y = defilement.scrollTop, h = finIntro();
+        if (Math.abs(dy) < 24) return;
+        if (dy < 0 && y < h - 1) { doigtIntro.joue = true; jouerIntro(h); }  // vers le haut, depuis l'accueil : on entre dans l'étoile
+        else if (dy > 0 && y <= h + 1 && y > 0) { doigtIntro.joue = true; jouerIntro(0); } // vers le bas, depuis le haut du club : on ressort
+      }, { passive: true });
+      for (const type of ['pointerup', 'pointercancel']) defilement.addEventListener(type, () => { doigtIntro = null; }, { passive: true });
+      // Un élan qui remonte depuis la suite s'arrête en haut du club : il ne rentre pas à moitié dans l'étoile.
+      defilement.addEventListener('scroll', () => {
+        const y = defilement.scrollTop, h = finIntro();
+        if (!idIntro && !idGlisse && !doigtIntro && y < h - 1 && yPrecedent >= h - 1 && yPrecedent - y < h * 0.5) defilement.scrollTop = h;
+        yPrecedent = defilement.scrollTop;
+        majGeste();
+      }, { passive: true });
+      majGeste();
+    }
     let cibleMolette = null, idMolette = 0, tMolette = 0, posee = 0; // posee : la dernière position écrite par l'amorti
     defilement.addEventListener('wheel', e => {
       if (calme || e.ctrlKey || !e.deltaY || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
