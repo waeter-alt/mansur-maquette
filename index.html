@@ -4697,6 +4697,65 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 .mo-scene[data-calme] .moj-holo.visible .moj-holo-faisceau, .mo-scene[data-calme] .moj-holo.visible .moj-holo-tremble,
 .mo-scene[data-calme] .moj-holo.visible .moj-holo-lignes { animation: none; }
 .mo-scene[data-calme] .moj-holo.visible .moj-holo-projection, .mo-scene[data-calme][data-univers="tajine"] .moj-holo--agent.visible .moj-holo-projection { animation: none; opacity: .9; }
+/* ============ MOBILE · HOLOGRAMME DU JOUEUR (2026-10-21, demande de Duncan) ============
+   Sous 640 px (« data-holo-tel », posé par le script) : la carte retournée descend en bas et devient l'émetteur ; le faisceau
+   monte de son bord haut vers la bannière, seule (pas d'agent), en grand. Glisser = joueur voisin ; points, flèches et une
+   démonstration y invitent. Les positions (--tel-…) viennent de placerZoneCartes. Rien de tout ça au-dessus de 640 px. */
+.moj-fleche, .moj-points, .moj-glisse-doigt { display: none; }
+.mo-scene[data-holo-tel] .moj-carte:not(.active) { opacity: 0; pointer-events: none; } /* les coéquipiers se fondent dans le socle : les points les remplacent */
+/* La bannière passe devant la nuque (منصور) et le col : l'obscurité les éteint. (Sa règle générale, « inset: -calc(…) », n'est pas
+   comprise par le navigateur : corrigée ici pour le téléphone seulement, l'ordinateur ne change pas.) */
+.mo-scene[data-holo-tel] .moj-obscurite { inset: calc(-300 * var(--mo-vh)) calc(-300 * var(--mo-vw)); }
+/* Le faisceau s'arrête sur le bord haut de la carte ; les réglages fins de l'ordinateur (zoom, décalage) ne s'appliquent pas. */
+.mo-scene[data-holo-tel] .moj-holo--fiche { bottom: auto; height: var(--tel-socle-haut); transform: none; }
+.mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-projection { pointer-events: auto; touch-action: pan-y; } /* on peut glisser sur la bannière */
+.mo-scene[data-holo-tel] .moj-retour { min-height: 44px; }
+/* Lisibilité au doigt : 12 px au moins pour tout texte de la bannière. Le type d'objet (CLAVIER…) n'y tient pas : l'icône le dit. */
+.mo-scene[data-holo-tel] .mob-etiquette { font-size: max(12px, var(--lc-etiquette-taille, 2.4cqw)); }
+.mo-scene[data-holo-tel] .mob-identite { font-size: max(12px, var(--lc-identite-taille, 2.8cqw)); }
+.mo-scene[data-holo-tel] .mob-objet > span { font-size: max(12px, var(--lc-objet-texte, 2.3cqw)); }
+.mo-scene[data-holo-tel] .mob-role { font-size: max(15px, var(--lc-role-taille, 3cqw)); }
+.mo-scene[data-holo-tel] .mob-role small { font-size: max(12px, .78em); }
+.mo-scene[data-holo-tel] .mob-bio { font-size: max(12px, var(--lc-bio-taille, 3.2cqw)); }
+.mo-scene[data-holo-tel] :is(.mob-vide, .mob-direct-infos, .mob-direct-badge) { font-size: 12px; }
+.mo-scene[data-holo-tel] .mob-case i { display: none; }
+.mo-scene[data-holo-tel] .mob-case { width: 80%; } /* cases un peu plus petites : la photo garde de la hauteur */
+/* Les réseaux : plus de tiroir sur le côté (pas la place) ; une rangée de boutons de 44 px sous le contenu de la bannière. */
+.mo-scene[data-holo-tel] .mob-bas { padding-bottom: 56px; }
+.mo-scene[data-holo-tel] .mob-tiroir { left: 0; right: 0; top: auto; bottom: 8px; overflow: visible; padding: 0; margin: 0; display: flex; justify-content: center; }
+.mo-scene[data-holo-tel] .mob-tiroir-interieur { display: flex; gap: 14px; padding: 0; background: none; border: 0; clip-path: none; overflow: visible; transform: none; animation: none; }
+.mo-scene[data-holo-tel] .mob-tiroir-interieur::before { display: none; }
+.mo-scene[data-holo-tel] .mob-bouton { width: 44px; height: 44px; }
+/* La réponse au doigt (.mo-appui, posée à l'appui) : la case s'emplit de lumière, comme au survol sur ordinateur. */
+.mob-bouton.mo-appui { color: var(--couleur-nuit); filter: drop-shadow(0 0 6px var(--holo-couleur)); }
+.mob-bouton.mo-appui .mob-bouton-fond { background: var(--holo-texte); animation: mob-flash .45s ease-out; }
+.mob-bouton.en-direct.mo-appui .mob-bouton-fond { background: var(--couleur-direct); }
+/* Les flèches, sur les bords, à mi-hauteur de la bannière : elles pulsent doucement vers l'extérieur. */
+.mo-scene[data-holo-tel] .moj-fleche { display: grid; place-items: center; position: absolute; z-index: 60; top: calc(var(--tel-b-haut) + var(--tel-b-h) / 2 - 22px);
+  width: 44px; height: 44px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; -webkit-tap-highlight-color: transparent; }
+.moj-fleche[data-sens="-1"] { left: 0; --pousse: -3px; }
+.moj-fleche[data-sens="1"] { right: 0; --pousse: 3px; }
+.moj-fleche i { width: 11px; height: 11px; margin-left: calc(var(--pousse) * -1); border-right: 2px solid var(--holo-texte); border-bottom: 2px solid var(--holo-texte); transform: rotate(-45deg);
+  filter: drop-shadow(0 0 4px var(--holo-couleur)); opacity: .6; animation: moj-fleche 1.8s ease-in-out infinite; }
+.moj-fleche[data-sens="-1"] i { transform: rotate(135deg); }
+@keyframes moj-fleche { 50% { translate: var(--pousse) 0; opacity: 1; } }
+.moj-fleche.mo-appui i, .moj-fleche:focus-visible i { opacity: 1; }
+/* Un point par joueur, dans le faisceau ; celui affiché est allumé. */
+.mo-scene[data-holo-tel] .moj-points { display: flex; gap: 10px; position: absolute; z-index: 60; left: 50%; top: var(--tel-points-y); transform: translate(-50%, -50%); pointer-events: none; }
+.moj-points i { width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--holo-texte) 35%, transparent); transition: background .25s, scale .25s; }
+.moj-points i.actif { background: var(--holo-texte); scale: 1.4; box-shadow: 0 0 8px var(--holo-couleur); }
+/* La démonstration (tant que le visiteur n'a pas glissé) : 1,2 s après l'allumage, la bannière part de 14 px vers la gauche et
+   revient avec un rebond, pendant que le point de toucher glisse de droite à gauche. Une fois par allumage. */
+.mo-scene[data-holo-tel][data-demo-glisse] .moj-holo.visible .moj-holo-image { animation: moj-demo-glisse 1.3s cubic-bezier(.3, .7, .3, 1) 1.2s both; }
+@keyframes moj-demo-glisse { 0%, 12% { translate: 0 0; } 48% { translate: -14px 0; } 70% { translate: 4px 0; } 85% { translate: -1.5px 0; } 100% { translate: 0 0; } }
+.mo-scene[data-holo-tel][data-demo-glisse][data-holo] .moj-glisse-doigt { display: block; position: absolute; z-index: 61; left: calc(50% + 24px); top: calc(var(--tel-b-haut) + var(--tel-b-h) * .45);
+  width: 52px; height: 52px; margin: -26px 0 0 -26px; pointer-events: none; opacity: 0; animation: moj-demo-doigt 1.3s cubic-bezier(.4, 0, .3, 1) 1.2s both; }
+@keyframes moj-demo-doigt { 0% { opacity: 0; translate: 26px 0; scale: .6; } 12% { opacity: 1; translate: 26px 0; scale: 1; } 52% { opacity: 1; translate: -48px 0; scale: .92; } 70%, 100% { opacity: 0; translate: -58px 0; scale: .7; } }
+.moj-glisse-doigt svg { display: block; width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 0 6px color-mix(in srgb, var(--couleur-nuit) 75%, transparent)); }
+.moj-glisse-doigt .d-point { fill: var(--moj-encre, var(--couleur-texte)); }
+.moj-glisse-doigt .d-anneau { fill: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 22%, transparent); stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 1.8; }
+.mo-scene[data-calme] .moj-fleche i, .mo-scene[data-calme] .moj-points i { animation: none; transition: none; opacity: 1; }
+html[data-qualite="allege"] .moj-fleche i, html[data-qualite="minimal"] .moj-fleche i { animation: none; opacity: 1; }
 /* Le menu s'efface quand une animation prend la vedette (un joueur sélectionné : carte retournée et hologrammes). */
 .mo-nav { z-index: 8; transition: transform .55s cubic-bezier(.2, .8, .2, 1), opacity .4s ease-out; }
 .mo-nav.mo-nav--efface { opacity: 0; pointer-events: none; }
@@ -5573,6 +5632,11 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         '<div class="moj-holo moj-holo--agent" aria-hidden="true"><div class="moj-holo-faisceau"></div><span class="moj-holo-nom"></span>' +
           '<div class="moj-holo-projection"><span class="moj-nom-fond"></span><div class="moj-holo-tremble"><div class="moj-holo-image"><img class="moj-holo-agent-img" alt="" decoding="async"></div><span class="moj-holo-teinte"></span><span class="moj-holo-lignes"></span><div class="moj-tranches"></div><span class="moj-scan"></span></div></div>' +
           '<div class="moj-holo-source"></div></div>' +
+        // Téléphone (2026-10-21) : flèches vers le joueur voisin, un point par joueur, et le doigt de la démonstration de glissement.
+        '<button type="button" class="moj-fleche" data-sens="-1" aria-label="Joueur précédent"><i aria-hidden="true"></i></button>' +
+        '<button type="button" class="moj-fleche" data-sens="1" aria-label="Joueur suivant"><i aria-hidden="true"></i></button>' +
+        '<div class="moj-points" aria-hidden="true">' + joueurs.map(() => '<i></i>').join('') + '</div>' +
+        '<span class="moj-glisse-doigt" aria-hidden="true"><svg viewBox="0 0 48 48"><circle class="d-anneau" cx="24" cy="24" r="13"/><circle class="d-point" cx="24" cy="24" r="6"/></svg></span>' +
       '</div>';
     // ---------- LE SITE : les sections après l'équipe (2026-10-20) ----------
     // Un lien encore inconnu (adresse à demander à l'asso) reste un bouton « bientôt » : il ne mène nulle part.
@@ -5964,8 +6028,13 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     let minuterieApercu = 0;      // fin du survol différée : passer d'une carte à sa voisine ne fait rien clignoter
     let minuterieRetournement = 0; // le joueur choisi se retourne une fois arrivé au centre
     const retour = scene.querySelector('.moj-retour');
+    const points = [...scene.querySelectorAll('.moj-points i')];
     let holoDisponible = false;   // assez de place à gauche pour l'hologramme
     let agentDisponible = false;  // assez de place à droite pour l'hologramme de l'agent
+    // Téléphone : hologramme de la bannière au-dessus de la carte posée en bas (voir placerZoneCartes). telBas : bas de la carte,
+    // telSocleL : sa largeur à l'écran (dans le repère de la zone des cartes).
+    let telHolo = false, telBas = 0, telSocleL = 0;
+    let aGlisse = false;          // le visiteur a déjà glissé d'un joueur à l'autre : plus de démonstration (pour toute la visite)
     let holoCarte = -1;           // la carte actuellement projetée
     let idImage = 0, idLecture = 0, visible = true;
     let pLisse = 0;          // progression affichée : rattrape la position de défilement en douceur (le V glisse au lieu de sauter)
@@ -6041,8 +6110,11 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       // Ce qu'on projette : la bannière du joueur (2 de large pour 3 de haut) ; univers tajine : la face de la carte.
       const rapport = univers === 'tajine' ? hauteurCarte / largeurCarte : 1.5;
       let holoL = Math.min(largeurCarte * r.holoTaille, (libreDroite - 24) * 0.9, (zoneHauteur - ecartFaisceau) / rapport);
-      holoDisponible = !etroit && holoL >= (univers === 'tajine' ? 120 : 180); // plus étroite, la bannière serait illisible
-      if (holoDisponible) {
+      // Téléphone (2026-10-21) : seulement la bannière (l'univers tajine, qui projette la face de la carte, reste sans hologramme).
+      telHolo = etroit && univers !== 'tajine' && r.hologramme;
+      holoDisponible = etroit ? telHolo : holoL >= (univers === 'tajine' ? 120 : 180); // plus étroite, la bannière serait illisible
+      if (telHolo) placerHoloTelephone(zoneHaut);
+      else if (holoDisponible) {
         const holoH = holoL * rapport;
         hauteurHolo = holoH;
         hautHolo = Math.max(0, zoneHauteur - ecartFaisceau - holoH);
@@ -6075,6 +6147,25 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       scene.style.setProperty('--carte-l', largeurCarte + 'px');
       scene.style.setProperty('--panneau', panneau + 'px');
       placerCartes();
+    }
+
+    // TÉLÉPHONE (2026-10-21) : la scène de l'hologramme prend tout l'écran à l'arrêt sur l'équipe (là où mène le lien « Équipe »),
+    // de sous le menu (56 px) jusqu'au-dessus de la barre d'actions (76 px), 8 px de marge chacun. De bas en haut : la carte
+    // retournée (30 % de la largeur), le faisceau (40 px au moins, avec les points), la bannière (88 % de la largeur, toute la
+    // hauteur qui reste ; sa hauteur suit la place, son cadre s'étire). Tout est dans le repère de la zone des cartes.
+    const SOCLE_TEL = 0.30, BANNIERE_TEL = 0.88, FAISCEAU_TEL = 40;
+    function placerHoloTelephone(zoneHaut) {
+      const zoneEcran = geometrie(progressionArret()).pointe - r.pente * largeur / 2 + dosHautPx + zoneHaut; // haut de la zone à l'écran, à l'arrêt
+      const haut = 56 + 8 - zoneEcran;
+      telBas = hauteur - 76 - 8 - zoneEcran;
+      telSocleL = largeur * SOCLE_TEL;
+      const socleH = telSocleL * hauteurCarte / largeurCarte;
+      const banniereL = largeur * BANNIERE_TEL, banniereH = Math.max(0, telBas - socleH - FAISCEAU_TEL - haut);
+      const v = (nom, px) => scene.style.setProperty(nom, px.toFixed(1) + 'px');
+      v('--holo-l', banniereL); v('--holo-h', banniereH); v('--holo-x', (largeur - banniereL) / 2); v('--holo-haut', haut);
+      v('--tel-b-haut', haut); v('--tel-b-h', banniereH);
+      v('--tel-socle-haut', telBas - socleH + 6); // la source lumineuse (12 px) est centrée sur le bord haut de la carte
+      v('--tel-points-y', (haut + banniereH + telBas - socleH) / 2);
     }
 
     // Les 5 styles de curseur : leur dessin (SVG), et leur pointe (hx, hy : le point qui clique, en % du dessin).
@@ -6221,9 +6312,19 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       const banc = cartes.map((_, i) => i).filter(i => i !== actif);
       const largeurBanc = banc.length * L * sBanc + (banc.length - 1) * 12;
       const yBanc = Z / 2 - (H * sBanc) / 2 - 4;
+      // Téléphone, joueur choisi : sa carte (retournée, donc agrandie) posée en bas, ses coéquipiers fondus dedans (voir le CSS).
+      const holoTel = telHolo && actif >= 0;
+      scene.toggleAttribute('data-holo-tel', holoTel);
+      scene.toggleAttribute('data-demo-glisse', holoTel && !aGlisse && !calme);
+      const sSocle = telSocleL / (L * agrandi), ySocle = telBas - Z / 2 - (H * sSocle * agrandi) / 2;
       cartes.forEach((carte, i) => {
         let x, y, echelle, angle = 0, voile = 0, z = 40;
-        if (actif < 0) {
+        if (holoTel) {
+          x = 0;
+          y = ySocle;
+          echelle = i === actif ? sSocle : sSocle * 0.9;
+          z = i === actif ? 50 : 45;
+        } else if (actif < 0) {
           if (etroit) {
             // CARROUSEL (mobile, 2026-10-21) : une carte en grand au centre, ses voisines plus petites et assombries
             // dépassent sur les côtés ; le doigt fait glisser la rangée (glisseCarrousel), un relâché change de carte.
@@ -6268,6 +6369,11 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       const hautBanc = yBanc - (H * sBanc) / 2;
       retour.style.left = (largeur / 2) + 'px';
       retour.style.top = (Z / 2 + (basCarte + hautBanc) / 2) + 'px';
+      if (holoTel) { // téléphone : à gauche de la carte posée en bas, à mi-hauteur
+        retour.style.left = ((largeur - telSocleL) / 4) + 'px';
+        retour.style.top = (Z / 2 + ySocle) + 'px';
+      }
+      points.forEach((p, k) => p.classList.toggle('actif', k === actif));
     }
 
     // APPARITION DES CARTES, ACCROCHÉE AU TISSU : les joueurs arrivent l'un après l'autre (ils montent, se redressent, grandissent),
@@ -6329,6 +6435,8 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       placerCartes();
       if (i >= 0) {
         cartes[i].focus({ preventScroll: true });
+        // Téléphone : la page vient se caler sur l'équipe, là où la bannière tient en entier entre le menu et la barre d'actions.
+        if (telHolo) glisserVers(cible('equipe'));
         // Mode calme : on saute le trajet vers le centre et le retournement : la carte arrive déjà de dos, avec ses hologrammes.
         if (calme) retourner(i, true);
         else minuterieRetournement = setTimeout(() => { if (actif === i) retourner(i, true); }, 480);
@@ -6840,6 +6948,26 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       carte.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activer(); } });
     });
     retour.addEventListener('click', () => choisir(-1));
+    // TÉLÉPHONE (2026-10-21) : glisser sur la bannière ou la carte → joueur suivant (vers la gauche) ou précédent (vers la droite),
+    // en boucle (après le dernier, le premier). Seulement un geste surtout horizontal (1,5 fois plus large que haut) d'au moins
+    // 40 px : un défilement de la page ne change pas de joueur. Les flèches font la même chose d'un appui.
+    const joueurVoisin = sens => choisir((actif + sens + N) % N);
+    const zoneJoueurs = scene.querySelector('.moj-zone');
+    let gesteTel = null;
+    zoneJoueurs.addEventListener('pointerdown', e => { gesteTel = scene.hasAttribute('data-holo-tel') ? { x: e.clientX, y: e.clientY } : null; });
+    zoneJoueurs.addEventListener('pointerup', e => {
+      if (!gesteTel) return;
+      const dx = e.clientX - gesteTel.x, dy = e.clientY - gesteTel.y;
+      gesteTel = null;
+      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+      ignorerClicJusqua = performance.now() + 350; // le doigt levé sur la carte ne doit pas la reposer (retour à l'équipe)
+      aGlisse = true; // le visiteur a compris : plus de démonstration
+      joueurVoisin(dx < 0 ? 1 : -1);
+    });
+    zoneJoueurs.addEventListener('pointercancel', () => { gesteTel = null; });
+    scene.querySelectorAll('.moj-fleche').forEach(fleche => fleche.addEventListener('click', () => {
+      if (performance.now() >= ignorerClicJusqua && actif >= 0) joueurVoisin(Number(fleche.dataset.sens));
+    }));
     const rangeeCartes = scene.querySelector('.moj-cartes');
     let doigt = null;
     rangeeCartes.addEventListener('pointerdown', e => { if (largeur < 640 && actif < 0) doigt = { x: e.clientX, y: e.clientY, horizontal: false }; });
@@ -7474,7 +7602,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     let minuterieAppui = 0, enAppui = null;
     scene.addEventListener('pointerdown', e => {
       if (e.pointerType === 'mouse') return;
-      const el = e.target.closest('.mo-bouton, .mo-nav-cta, .mo-canal, .mo-semaine, .mo-reseau'); // (pas les postes : rien à l'appui)
+      const el = e.target.closest('.mo-bouton, .mo-nav-cta, .mo-canal, .mo-semaine, .mo-reseau, .mob-bouton, .moj-fleche'); // (pas les postes : rien à l'appui)
       if (!el) return;
       clearTimeout(minuterieAppui); enAppui?.classList.remove('mo-appui');
       const b = el.getBoundingClientRect();
