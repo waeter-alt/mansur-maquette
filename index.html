@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MANSUR Esport · Saison 2026-27 (maquette)</title>
-<!-- Maquette du site du club MANSUR, exportée d'AniMotion le 2026-10-21. Images de maquette uniquement. -->
+<!-- Maquette du site du club MANSUR, exportée d'AniMotion le 2026-10-22. Images de maquette uniquement. -->
 <style>
 /* Polices du thème « Obsidienne », intégrées dans ce fichier pour fonctionner aussi en double-cliquant index.html
    (le navigateur bloque le chargement d'un fichier de police séparé depuis le disque).
@@ -4721,36 +4721,42 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
    faisceau en 0,2 s, projection 0,1 s après en 0,4 s, réseaux avec elle (40 ms de décalage, 0,2 s chacun). */
 .mo-scene[data-holo-tel] .moj-carte.active .moj-pivot { transition-duration: .35s; }
 .mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-faisceau { transition-duration: .2s; }
-.mo-scene[data-holo-tel]:not([data-calme]) .moj-holo--fiche.visible .moj-holo-projection,
-.mo-scene[data-holo-tel]:not([data-calme]) .moj-holo--fiche.visible::before { animation: moj-holo-allumage .4s linear .1s both; }
+.mo-scene[data-holo-tel]:not([data-calme]) .moj-holo--fiche.visible .moj-holo-projection { animation: moj-holo-allumage .4s linear .1s both; }
 .mo-scene[data-holo-tel] .mob-bouton { animation-duration: .2s; animation-delay: calc(.1s + var(--rang, 0) * 40ms); }
 .mo-scene[data-holo-tel][data-holo] .moj-carte.active .moj-contour { opacity: 1; animation: none; }
 .mo-scene[data-holo-tel] .moj-carte.active .moj-rappel { display: none; } /* illisible couchée : la carte reste touchable, « Retour » est à côté */
 /* Le faisceau part du milieu de la carte couchée ; les réglages fins de l'ordinateur (zoom, décalage) ne s'appliquent pas. */
 .mo-scene[data-holo-tel] .moj-holo--fiche { bottom: auto; height: var(--tel-socle-haut); transform: none; }
 .mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-projection { pointer-events: auto; touch-action: none; } /* on glisse sur la bannière */
-/* Un fond de nuit sous la bannière : le texte se lit sur du noir, quoi qu'il y ait derrière. Il s'allume avec la projection (même
-   minutage, même scintillement) et n'est jamais visible seul (2026-10-22 : il apparaissait en grand rectangle noir avant l'allumage). */
-.mo-scene[data-holo-tel] .moj-holo--fiche::before { content: ""; position: absolute; left: 0; right: 0; top: var(--holo-haut); height: var(--holo-h); background: var(--couleur-nuit); opacity: 0; }
-.mo-scene[data-holo-tel] .moj-holo--fiche.visible::before { animation: moj-holo-allumage .6s linear .42s both; }
-.mo-scene[data-calme][data-holo-tel] .moj-holo--fiche.visible::before { animation: none; opacity: .9; }
-/* LE PIVOT (glisser ou flèches, 2026-10-22, revu : jamais deux bannières à la fois) : la carte reste couchée, la bannière tourne
-   sur elle-même comme un panneau. Elle tourne jusqu'à 90° (vue par la tranche, invisible) dans le sens du geste en 0,2 s, on
-   change de joueur à cet instant, puis elle revient de l'autre côté jusqu'à 0° en 0,25 s, avec un léger rebond. Son fond de nuit
-   et les réseaux tournent avec elle. --sens : 1 = vers le suivant (geste vers la gauche), -1 = vers le précédent. */
-.mo-scene[data-holo-tel] .moj-holo--fiche { perspective: 900px; perspective-origin: 50% calc(var(--holo-haut) + var(--holo-h) / 2); }
-.mo-scene[data-holo-tel] .moj-holo--fiche.visible:is(.pivot-sort, .pivot-entre)::before { opacity: .9; }
-.mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-sort .moj-holo-projection, .mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-sort::before {
-  animation: moj-pivot-sort .2s cubic-bezier(.55, 0, 1, .45) forwards; }
-.mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-entre .moj-holo-projection, .mo-scene[data-holo-tel] .moj-holo--fiche.visible.pivot-entre::before {
-  animation: moj-pivot-entre .25s cubic-bezier(.2, .9, .3, 1.12) both; }
-@keyframes moj-pivot-sort { from { transform: none; } to { transform: rotateY(calc(var(--sens, 1) * -90deg)); } }
-@keyframes moj-pivot-entre { from { transform: rotateY(calc(var(--sens, 1) * 90deg)); } to { transform: none; } }
-.mo-scene[data-holo-tel] .moj-holo--fiche.pivot-entre .mob-bouton { animation: none; opacity: 1; } /* les réseaux arrivent avec la bannière, sans attendre leur allumage */
+/* Un fond de nuit sous chaque bannière : le texte se lit sur du noir, quoi qu'il y ait derrière. Il est DANS la projection : il
+   s'allume, scintille et glisse avec elle, et n'est jamais visible seul. Sur téléphone, la projection n'est donc plus en fusion
+   « écran » (qui rendrait ce fond transparent) : sur du noir, le rendu est le même. */
+.mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-projection { mix-blend-mode: normal; }
+.mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-projection::before { content: ""; position: absolute; inset: 0; background: var(--couleur-nuit); }
+/* LE GLISSEMENT (2026-10-22, « un vrai swipe classique », voir le script) : la bannière courante et sa voisine, côte à côte (16 px
+   d'écart), suivent le doigt ; au lâcher, un ressort de 0,35 s les mène à leur place. Hors glissement, la voisine est cachée. */
+.mo-scene[data-holo-tel] .moj-holo--fiche .moj-voisine { visibility: hidden; }
+.mo-scene[data-holo-tel] .moj-holo--fiche.en-glisse .moj-voisine { visibility: visible; }
+/* LA RÉCOMPENSE (à la validation d'une glissade) : un reflet doré balaie la nouvelle bannière de gauche à droite (0,5 s), son
+   pseudo entre lettre par lettre (20 ms d'écart, 12 px + fondu, 0,25 s chacune), ses réseaux arrivent en rebond (40 ms d'écart) ;
+   le liseré de la carte couchée et le faisceau s'éclairent (+40 %, 0,3 s). Les couleurs viennent du thème. */
+.mo-scene[data-holo-tel] .moj-holo-projection.dopamine .mob-carte::after { content: ""; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
+  background: linear-gradient(105deg, transparent 32%, color-mix(in srgb, var(--metal-sombre) 40%, transparent) 40%, color-mix(in srgb, var(--metal-clair) 70%, transparent) 47%,
+    var(--metal-reflet) 50%, color-mix(in srgb, var(--metal-clair) 70%, transparent) 53%, color-mix(in srgb, var(--metal-sombre) 40%, transparent) 60%, transparent 68%);
+  transform: translateX(-100%); animation: mob-reflet .5s cubic-bezier(.4, 0, .3, 1) forwards; }
+@keyframes mob-reflet { to { transform: translateX(100%); } }
+.mob-lettre { display: inline-block; }
+.mo-scene[data-holo-tel] .moj-holo-projection.dopamine .mob-lettre { animation: mob-lettre .25s cubic-bezier(.2, .8, .3, 1) calc(var(--k, 0) * 20ms) both; }
+@keyframes mob-lettre { from { opacity: 0; transform: translateY(12px); } }
+.mo-scene[data-holo-tel] .moj-holo-projection.dopamine .mob-bouton { animation: mob-rebond .35s ease-out calc(var(--rang, 0) * 40ms) both; }
+@keyframes mob-rebond { 0% { opacity: 0; scale: .6; } 60% { opacity: 1; scale: 1.08; } 100% { opacity: 1; scale: 1; } }
+.mo-scene[data-holo-tel] .moj-holo--fiche.eclat :is(.moj-holo-faisceau, .moj-holo-source) { animation: moj-eclat .3s ease-out; }
+html:is([data-qualite="allege"], [data-qualite="minimal"]) .moj-holo-projection.dopamine .mob-carte::after { display: none; }
+html:is([data-qualite="allege"], [data-qualite="minimal"]) .moj-holo-projection.dopamine .mob-lettre { animation: none; }
 /* Pendant le pivot, les cartes changent sans animation (la nouvelle arrive déjà couchée) ; son liseré lance juste un éclat. */
 .mo-scene[data-pivot] .moj-carte, .mo-scene[data-pivot] .moj-carte * { transition: none !important; }
-.mo-scene[data-holo-tel][data-holo] .moj-carte.active.eclat .moj-contour { animation: moj-eclat .5s ease-out; }
-@keyframes moj-eclat { 0% { filter: brightness(2.2); } 100% { filter: none; } }
+.mo-scene[data-holo-tel][data-holo] .moj-carte.active.eclat .moj-contour { animation: moj-eclat .3s ease-out; }
+@keyframes moj-eclat { 0% { filter: brightness(1.4); } 100% { filter: none; } }
 /* Lisibilité : le texte reste net (pas de tremblement), les lignes de balayage seulement sur la photo. */
 .mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-lignes { display: none; }
 .mo-scene[data-holo-tel] .moj-holo--fiche.visible .moj-holo-tremble { animation: none; }
@@ -4788,12 +4794,12 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 /* Un point par joueur, dans le faisceau ; celui affiché est allumé. */
 .mo-scene[data-holo-tel] .moj-points { display: flex; gap: 10px; position: absolute; z-index: 60; left: 50%; top: var(--tel-points-y); transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity .3s; }
 .mo-scene[data-holo-tel][data-holo] .moj-points { opacity: 1; } /* pas sur la carte encore debout : ils arrivent avec l'hologramme */
-.moj-points i { width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--holo-texte) 35%, transparent); transition: background .25s, scale .25s; }
-.moj-points i.actif { background: var(--holo-texte); scale: 1.4; box-shadow: 0 0 8px var(--holo-couleur); }
-/* La démonstration (tant que le visiteur n'a pas glissé) : 1,2 s après l'allumage, la bannière part de 14 px vers la gauche et
-   revient avec un rebond, pendant que le point de toucher glisse de droite à gauche. Une fois par allumage. */
-.mo-scene[data-holo-tel][data-demo-glisse] .moj-holo.visible { animation: moj-demo-glisse 1.3s cubic-bezier(.3, .7, .3, 1) 1.2s both; }
-@keyframes moj-demo-glisse { 0%, 12% { translate: 0 0; } 48% { translate: -14px 0; } 70% { translate: 4px 0; } 85% { translate: -1.5px 0; } 100% { translate: 0 0; } }
+.moj-points i { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in srgb, var(--holo-texte) 35%, transparent); }
+/* Le point du joueur affiché : une pilule de 22 px qui glisse jusqu'à sa place avec un ressort (--point : son rang, posé par le script). */
+.moj-points::after { content: ""; position: absolute; left: 0; top: 0; width: 22px; height: 8px; border-radius: 4px; background: var(--holo-texte); box-shadow: 0 0 8px var(--holo-couleur);
+  transform: translateX(calc(var(--point, 0) * 18px - 7px)); transition: transform .35s cubic-bezier(.2, 1.25, .3, 1); }
+/* La démonstration (tant que le visiteur n'a pas glissé) : 1,2 s après l'allumage, le point de toucher glisse de droite à gauche,
+   pendant l'aperçu du script (la bannière part de 40 px vers la gauche, montre le bord de la suivante, revient). Une fois par allumage. */
 .mo-scene[data-holo-tel][data-demo-glisse][data-holo] .moj-glisse-doigt { display: block; position: absolute; z-index: 61; left: calc(50% + 24px); top: calc(var(--tel-b-haut) + var(--tel-b-h) * .45);
   width: 52px; height: 52px; margin: -26px 0 0 -26px; pointer-events: none; opacity: 0; animation: moj-demo-doigt 1.3s cubic-bezier(.4, 0, .3, 1) 1.2s both; }
 @keyframes moj-demo-doigt { 0% { opacity: 0; translate: 26px 0; scale: .6; } 12% { opacity: 1; translate: 26px 0; scale: 1; } 52% { opacity: 1; translate: -48px 0; scale: .92; } 70%, 100% { opacity: 0; translate: -58px 0; scale: .7; } }
@@ -4801,7 +4807,7 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 .moj-glisse-doigt .d-point { fill: var(--moj-encre, var(--couleur-texte)); }
 .moj-glisse-doigt .d-anneau { fill: color-mix(in srgb, var(--moj-encre, var(--couleur-texte)) 22%, transparent); stroke: var(--moj-encre, var(--couleur-texte)); stroke-width: 1.8; }
 .mo-scene[data-calme] .moj-fleche i, .mo-scene[data-calme] .moj-points i { animation: none; transition: none; opacity: 1; }
-.mo-scene[data-calme] .moj-points { transition: none; }
+.mo-scene[data-calme] .moj-points, .mo-scene[data-calme] .moj-points::after { transition: none; }
 html[data-qualite="allege"] .moj-fleche i, html[data-qualite="minimal"] .moj-fleche i { animation: none; opacity: 1; }
 /* Le menu s'efface quand une animation prend la vedette (un joueur sélectionné : carte retournée et hologrammes). */
 .mo-nav { z-index: 8; transition: transform .55s cubic-bezier(.2, .8, .2, 1), opacity .4s ease-out; }
@@ -5967,7 +5973,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     const flottes = cartes.map(c => c.querySelector('.moj-flotte'));
     const holo = scene.querySelector('.moj-holo');
     holo.classList.toggle('moj-holo--fiche', univers !== 'tajine'); // la bannière du joueur (voir montrerHologramme)
-    const holoImage = scene.querySelector('.moj-holo-image');
+    let holoImage = scene.querySelector('.moj-holo-image'); // (téléphone : celle de la bannière courante, voir LE GLISSEMENT)
     const holoAgent = scene.querySelector('.moj-holo--agent');
     const imageAgent = scene.querySelector('.moj-holo-agent-img');
     // Image d'agent absente (dossier de maquette non copié) : on n'affiche pas cet hologramme.
@@ -6083,7 +6089,15 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     let entreeSite = false;       // téléphone : on a ajouté l'entrée d'historique « hors accueil » (voir HISTORIQUE)
     let versAccueil = false;      // téléphone : retour vers l'accueil en cours (on n'ajoute pas d'entrée pendant ce trajet)
     let suiviDefilement = false;  // téléphone : la carte suit le défilement sans délai (voir le défilement plus bas)
-    let minuteriePivot = 0;       // téléphone : milieu du pivot de la bannière (changement de joueur)
+    let minuteriePivot = 0;       // téléphone : fin de la glissade en cours (ressort, aperçu)
+    // Téléphone : deux bannières côte à côte pour le glissement, la courante et sa voisine (une copie de la projection, ajoutée
+    // seulement sur téléphone) ; elles échangent leurs rôles à chaque glissade validée.
+    let projCourante = holo.querySelector('.moj-holo-projection');
+    let projVoisine = projCourante.cloneNode(true);
+    projVoisine.classList.add('moj-voisine');
+    let voisineSens = 0;          // 1 : la voisine montre le joueur suivant (à droite) ; -1 : le précédent (à gauche) ; 0 : rien
+    let finGlissade = null;       // ce qui reste à faire quand la glissade en cours se termine
+    let minuterieApercuTel = 0;   // l'aperçu (incitation à glisser)
     let aGlisse = false;          // le visiteur a déjà glissé d'un joueur à l'autre : plus de démonstration (pour toute la visite)
     let holoCarte = -1;           // la carte actuellement projetée
     let idImage = 0, idLecture = 0, visible = true;
@@ -6209,8 +6223,9 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     const elementsTel = [...scene.querySelectorAll('.moj-fleche, .moj-points, .moj-glisse-doigt')];
     function rangerHoloTelephone() {
       if (telHolo === (holo.parentElement === sceneTel)) return;
-      if (telHolo) sceneTel.append(retour, holo, ...elementsTel);
-      else { const zone = holoAgent.parentElement; zone.insertBefore(holo, holoAgent); zone.insertBefore(retour, holo); zone.append(...elementsTel); }
+      if (telHolo) { sceneTel.append(retour, holo, ...elementsTel); holo.appendChild(projVoisine); }
+      else {
+        projVoisine.remove(); const zone = holoAgent.parentElement; zone.insertBefore(holo, holoAgent); zone.insertBefore(retour, holo); zone.append(...elementsTel); }
     }
     // La mise en page, en px depuis le haut de l'écran : de sous le menu jusqu'au-dessus de la barre « Prochain match » (toutes
     // deux MESURÉES, 8 px de marge). De bas en haut : la carte couchée à plat (34 % de la largeur ; « Retour » à sa gauche), le
@@ -6447,6 +6462,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         retour.style.top = (Z / 2 + (basCarte + hautBanc) / 2) + 'px';
       }
       points.forEach((p, k) => p.classList.toggle('actif', k === actif));
+      points[0].parentElement.style.setProperty('--point', String(actif)); // la pilule glisse jusqu'au point du joueur affiché
     }
 
     // APPARITION DES CARTES, ACCROCHÉE AU TISSU : les joueurs arrivent l'un après l'autre (ils montent, se redressent, grandissent),
@@ -6556,23 +6572,23 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         '</div></div>' +
         '<svg class="mob-cadre" viewBox="0 0 100 150" preserveAspectRatio="none" aria-hidden="true"><polygon points="' + cadre + '"/></svg></div>' + tiroirReseaux(j);
     }
-    function afficherBanniere(i) {
-      holoImage.innerHTML = banniere(joueurs[i]);
-      const photo = holoImage.querySelector('.mob-photo img');
+    function afficherBanniere(i, image = holoImage) { // image : téléphone, la bannière voisine pendant un glissement
+      image.innerHTML = banniere(joueurs[i]);
+      const photo = image.querySelector('.mob-photo img');
       photo.addEventListener('error', () => photo.parentElement.classList.add('mob-sans-photo'));
-      ajusterPseudo();
-      document.fonts.ready.then(ajusterPseudo); // une police chargée après coup change la longueur du pseudo
+      ajusterPseudo(image);
+      document.fonts.ready.then(() => ajusterPseudo(image)); // une police chargée après coup change la longueur du pseudo
     }
     // Le pseudo remplit la longueur libre le long de la photo comme celui de Medhielm dans le réglage de référence de Duncan
     // (2026-10-15 : 96 % de la hauteur libre), quelle que soit sa longueur ou celle de la description. Le réglage de taille
     // multiplie ce remplissage (1 = la référence) ; le pseudo ne dépasse jamais de la bannière.
     const REMPLISSAGE_PSEUDO = 0.96;
     const EPAISSEUR_PSEUDO = 0.985; // épaisseur du pseudo vertical : taille de police / largeur de la colonne (mesuré sur Medhielm)
-    function ajusterPseudo() {
-      const pseudo = holoImage.querySelector('.mob-pseudo'), haut = holoImage.querySelector('.mob-haut');
+    function ajusterPseudo(image = holoImage) {
+      const pseudo = image.querySelector('.mob-pseudo'), haut = image.querySelector('.mob-haut');
       if (!pseudo || !haut) return;
       const horizontal = r.lcPseudoSens === 'horizontal';
-      const cqw = holoImage.clientWidth / 100;
+      const cqw = image.clientWidth / 100;
       const libre = horizontal ? haut.clientWidth - r.lcPseudoX * cqw : haut.clientHeight - r.lcPseudoY * cqw;
       const longueur = horizontal ? pseudo.offsetWidth : pseudo.offsetHeight;
       if (libre <= 0 || !longueur) return;
@@ -6603,6 +6619,8 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       holoCarte = i;
       holo.classList.add('visible');
       scene.dataset.holo = '';
+      // Téléphone : l'aperçu, au moment où le doigt de la démonstration glisse (1,2 s après l'allumage, + 0,16 s).
+      if (telHolo && !aGlisse && !calme) { clearTimeout(minuterieApercuTel); minuterieApercuTel = setTimeout(montrerApercu, 1360); }
       if (agentDisponible && r.holoAgent && joueurs[i].agentImage) {
         if (imageAgent.getAttribute('src') !== joueurs[i].agentImage) imageAgent.src = joueurs[i].agentImage;
         holoAgent.style.setProperty('--agent-masque', 'url("' + joueurs[i].agentImage + '")'); // sa silhouette détourée
@@ -6613,8 +6631,10 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     }
     function cacherHologramme() {
       holoCarte = -1;
-      clearTimeout(minuteriePivot);
-      holo.classList.remove('pivot-sort', 'pivot-entre'); // (téléphone) au prochain allumage : l'allumage, pas le pivot
+      clearTimeout(minuterieApercuTel);
+      clearTimeout(minuteriePivot); // (téléphone) une glissade en cours s'arrête, les bannières reviennent en place
+      finGlissade = null;
+      rangerDiapos();
       holo.classList.remove('visible');
       if (holoAgent) holoAgent.classList.remove('visible');
       delete scene.dataset.holo;
@@ -7030,61 +7050,152 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       carte.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activer(); } });
     });
     retour.addEventListener('click', () => choisir(-1));
-    // TÉLÉPHONE (2026-10-21) : glisser sur la bannière ou la carte → joueur suivant (vers la gauche) ou précédent (vers la droite),
-    // en boucle (après le dernier, le premier). Seulement un geste surtout horizontal (1,5 fois plus large que haut) d'au moins
-    // 40 px : un défilement de la page ne change pas de joueur. Les flèches font la même chose d'un appui.
-    // Hologramme allumé (et animations normales) : il pivote vers le voisin ; sinon (retournement en cours, animations réduites),
-    // on passe par la sélection habituelle.
-    const joueurVoisin = sens => {
+    // LE GLISSEMENT (téléphone, 2026-10-22, « un vrai swipe classique ») : sur la bannière ou la carte, la bannière suit le doigt au
+    // pixel près, sa voisine (suivante vers la gauche, précédente vers la droite) arrive à côté, 16 px plus loin. Dès 8 px, un geste
+    // surtout horizontal (1,5 fois plus large que haut) verrouille le glissement ; sinon la page défile. Au lâcher : au-delà de 25 %
+    // de la largeur ou à plus de 0,4 px/ms, on passe au voisin ; sinon retour en place. Les deux avec un ressort. Ça boucle.
+    // Hologramme pas encore allumé ou animations réduites : la sélection habituelle (instantanée en animations réduites).
+    const ECART_TEL = 16;
+    const glissadePossible = () => telHolo && !calme && holoCarte === actif && holo.classList.contains('visible');
+    const joueurVoisin = sens => { if (glissadePossible()) glissadeFleche(sens); else choisir((actif + sens + N) % N); };
+    // La voisine reçoit le joueur d'à côté (une seule fois par sens).
+    function preparerVoisine(sens) {
+      if (voisineSens === sens) return;
+      voisineSens = sens;
+      projVoisine.classList.remove('dopamine');
+      afficherBanniere((actif + sens + N) % N, projVoisine.querySelector('.moj-holo-image'));
+    }
+    // Les deux bannières : décalage dx, inclinaison (3° au plus) et réduction (jusqu'à 0,97) selon la distance à la place de repos
+    // la plus proche. duree > 0 : ressort (petit dépassement puis retour).
+    function poserDiapos(dx, duree, courbe = 'cubic-bezier(.2, 1.25, .3, 1)') {
+      const pas = voisineSens * (projCourante.offsetWidth + ECART_TEL);
+      const f = Math.min(Math.abs(dx), Math.abs(dx + pas)) / projCourante.offsetWidth;
+      const incline = (dx < 0 ? -1 : 1) * Math.min(3, 6 * f), echelle = 1 - Math.min(0.03, 0.06 * f);
+      for (const [el, x] of [[projCourante, dx], [projVoisine, dx + pas]]) {
+        el.style.transition = duree ? 'transform ' + duree + 's ' + courbe + ', opacity .18s' : 'opacity .18s';
+        el.style.transform = 'translateX(' + x.toFixed(1) + 'px) rotate(' + incline.toFixed(2) + 'deg) scale(' + echelle.toFixed(4) + ')';
+      }
+    }
+    function rangerDiapos() {
+      for (const el of [projCourante, projVoisine]) { el.style.removeProperty('transform'); el.style.removeProperty('transition'); }
+      holo.classList.remove('en-glisse');
+      voisineSens = 0;
+    }
+    // Une glissade encore en cours (ressort, aperçu) se termine d'un coup quand un nouveau geste commence.
+    function terminerGlissade() {
+      clearTimeout(minuteriePivot);
+      const fin = finGlissade;
+      finGlissade = null;
+      if (fin) fin();
+    }
+    function apresGlissade(duree, fin) { finGlissade = fin; minuteriePivot = setTimeout(terminerGlissade, duree * 1000 + 30); }
+    // Glissade validée : la carte couchée change de joueur tout de suite, la voisine glisse à sa place puis devient la bannière courante.
+    function validerGlissade(sens, duree) {
       const i = (actif + sens + N) % N;
-      if (telHolo && !calme && holoCarte === actif && holo.classList.contains('visible')) pivoter(i, sens); else choisir(i);
-    };
-    function pivoter(i, sens) {
-      const ancien = actif;
       clearTimeout(minuterieRetournement);
-      // La carte : la nouvelle prend la place de l'ancienne, déjà retournée et couchée, sans animation.
-      scene.dataset.pivot = '';
-      cartes[ancien].classList.remove('retournee', 'eclat');
-      flottes[ancien].classList.remove('flotte');
+      scene.dataset.pivot = ''; // (les cartes changent sans transition : la nouvelle arrive déjà couchée)
+      cartes[actif].classList.remove('retournee', 'eclat');
+      flottes[actif].classList.remove('flotte');
       actif = i;
       cartes[i].classList.add('retournee');
       if (r.flottementCarte > 0) flottes[i].classList.add('flotte');
       placerCartes();
-      void scene.offsetWidth; // le navigateur applique ces changements sans transition avant qu'on les rétablisse
+      void scene.offsetWidth; // le navigateur applique ces changements avant qu'on rétablisse les transitions
       delete scene.dataset.pivot;
-      cartes[i].classList.add('eclat');
-      setTimeout(() => cartes[i].classList.remove('eclat'), 500);
-      // L'hologramme : la bannière tourne jusqu'à la tranche (0,2 s), change de joueur, puis revient de l'autre côté.
       holoCarte = i;
-      clearTimeout(minuteriePivot);
-      holo.style.setProperty('--sens', String(sens));
-      holo.classList.remove('pivot-sort', 'pivot-entre');
-      void holo.offsetWidth; // pour rejouer la rotation à chaque pivot, même enchaîné
-      holo.classList.add('pivot-sort');
-      minuteriePivot = setTimeout(() => {
-        afficherBanniere(i);
-        holo.classList.replace('pivot-sort', 'pivot-entre');
-      }, 200);
       defilementChoix = defilement.scrollTop;
+      recompenser();
+      poserDiapos(-voisineSens * (projCourante.offsetWidth + ECART_TEL), duree);
+      apresGlissade(duree, () => {
+        [projCourante, projVoisine] = [projVoisine, projCourante];
+        projCourante.classList.remove('moj-voisine');
+        projVoisine.classList.add('moj-voisine');
+        holoImage = projCourante.querySelector('.moj-holo-image');
+        rangerDiapos();
+      });
+    }
+    function glissadeFleche(sens) {
+      terminerGlissade();
+      holo.classList.add('en-glisse');
+      preparerVoisine(sens);
+      poserDiapos(0, 0);
+      void holo.offsetWidth; // la voisine est posée à côté avant de glisser
+      validerGlissade(sens, 0.35);
+    }
+    // LA RÉCOMPENSE (« dopamine », à la validation) : vibration courte (Android), reflet doré sur la nouvelle bannière, pseudo lettre
+    // par lettre, réseaux en rebond, liseré de la carte et faisceau qui s'éclairent (voir le CSS « LA RÉCOMPENSE »).
+    function recompenser() {
+      if (navigator.vibrate) navigator.vibrate(12);
+      const pseudo = projVoisine.querySelector('.mob-pseudo');
+      if (pseudo && !pseudo.querySelector('.mob-lettre')) {
+        const lettres = [...pseudo.textContent].map((c, k) => {
+          const l = document.createElement('span');
+          l.className = 'mob-lettre';
+          l.style.setProperty('--k', k);
+          l.textContent = c === ' ' ? ' ' : c; // une espace seule dans un bloc disparaîtrait
+          return l;
+        });
+        pseudo.replaceChildren(...lettres);
+      }
+      for (const [el, classe] of [[projVoisine, 'dopamine'], [holo, 'eclat'], [cartes[actif], 'eclat']]) {
+        el.classList.remove(classe); void el.offsetWidth; el.classList.add(classe);
+      }
+      const carte = cartes[actif];
+      setTimeout(() => { holo.classList.remove('eclat'); carte.classList.remove('eclat'); }, 320);
+    }
+    // L'APERÇU (incitation, tant que le visiteur n'a pas glissé) : avec le doigt de la démonstration, la bannière part de 40 px vers
+    // la gauche en montrant le bord de la suivante, puis revient avec le ressort.
+    function montrerApercu() {
+      if (aGlisse || !glissadePossible() || gesteTel || finGlissade) return;
+      holo.classList.add('en-glisse');
+      preparerVoisine(1);
+      poserDiapos(0, 0);
+      void holo.offsetWidth;
+      poserDiapos(-40, 0.4, 'cubic-bezier(.3, 0, .2, 1)');
+      apresGlissade(0.45, () => { poserDiapos(0, 0.35); apresGlissade(0.35, rangerDiapos); });
     }
     const zoneJoueurs = scene.querySelector('.moj-zone');
     let gesteTel = null;
-    const debutGeste = e => { gesteTel = scene.hasAttribute('data-holo-tel') ? { x: e.clientX, y: e.clientY } : null; };
-    const finGeste = e => {
-      if (!gesteTel) return;
-      const dx = e.clientX - gesteTel.x, dy = e.clientY - gesteTel.y;
-      gesteTel = null;
-      if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-      ignorerClicJusqua = performance.now() + 350; // le doigt levé sur la carte ne doit pas la reposer (retour à l'équipe)
-      aGlisse = true; // le visiteur a compris : plus de démonstration
-      joueurVoisin(dx < 0 ? 1 : -1);
-    };
-    // Sur la carte (dans la zone des cartes) comme sur la bannière (dans le calque de l'écran).
-    for (const el of [zoneJoueurs, sceneTel]) {
-      el.addEventListener('pointerdown', debutGeste);
-      el.addEventListener('pointerup', finGeste);
-      el.addEventListener('pointercancel', () => { gesteTel = null; });
+    function debutGeste(e) {
+      if (!scene.hasAttribute('data-holo-tel') || gesteTel) return;
+      terminerGlissade();
+      gesteTel = { x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, t: performance.now(), vitesse: 0, horizontal: null, surBanniere: sceneTel.contains(e.target) };
+      window.addEventListener('pointermove', suivreGeste);
+      window.addEventListener('pointerup', finGeste);
+      window.addEventListener('pointercancel', finGeste);
     }
+    function suivreGeste(e) {
+      const g = gesteTel, dx = e.clientX - g.x0, dy = e.clientY - g.y0, t = performance.now();
+      if (g.horizontal === null && Math.hypot(dx, dy) >= 8) g.horizontal = Math.abs(dx) > Math.abs(dy) * 1.5;
+      // Geste vertical commencé sur la bannière : elle est hors de la page qui défile, on fait défiler la page nous-mêmes.
+      if (g.horizontal === false && g.surBanniere) defilement.scrollTop -= e.clientY - g.y;
+      if (g.horizontal && glissadePossible()) {
+        holo.classList.add('en-glisse');
+        preparerVoisine(dx < 0 ? 1 : -1);
+        poserDiapos(dx, 0);
+      }
+      if (t > g.t) g.vitesse = 0.7 * (e.clientX - g.x) / (t - g.t) + 0.3 * g.vitesse; // px/ms, lissée
+      g.x = e.clientX; g.y = e.clientY; g.t = t;
+    }
+    function finGeste(e) {
+      window.removeEventListener('pointermove', suivreGeste);
+      window.removeEventListener('pointerup', finGeste);
+      window.removeEventListener('pointercancel', finGeste);
+      const g = gesteTel;
+      gesteTel = null;
+      if (!g || !g.horizontal) return;
+      ignorerClicJusqua = performance.now() + 350; // le doigt levé sur la carte ne doit pas la reposer (retour à l'équipe)
+      aGlisse = true; // le visiteur a compris : plus d'aperçu
+      scene.removeAttribute('data-demo-glisse');
+      const dx = (e.type === 'pointercancel' ? g.x : e.clientX) - g.x0, sens = dx < 0 ? 1 : -1;
+      if (!glissadePossible()) { if (Math.abs(dx) >= 40) choisir((actif + sens + N) % N); return; }
+      if (!voisineSens) return;
+      const rapide = Math.abs(g.vitesse) > 0.4 && g.vitesse * dx > 0;
+      if (Math.abs(dx) > projCourante.offsetWidth * 0.25 || rapide) validerGlissade(sens, rapide ? 0.25 : 0.35);
+      else { poserDiapos(0, 0.35); apresGlissade(0.35, rangerDiapos); }
+    }
+    // Sur la carte (dans la zone des cartes) comme sur la bannière (dans le calque de l'écran).
+    for (const el of [zoneJoueurs, sceneTel]) el.addEventListener('pointerdown', debutGeste);
     // Téléphone : pendant un petit défilement, l'hologramme reste à l'écran et la carte couchée le suit ; au-delà d'un tiers
     // d'écran, le visiteur est passé à autre chose : retour à l'équipe.
     defilement.addEventListener('scroll', () => {
@@ -7807,6 +7918,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         arreterBrouillage();
         clearTimeout(minuterieRetournement);
         clearTimeout(minuteriePivot);
+        clearTimeout(minuterieApercuTel);
         clearTimeout(minuterieApercu);
         clearTimeout(minuterieEntree);
         arreterLecture();
