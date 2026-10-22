@@ -4712,9 +4712,9 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 .mo-scene[data-holo-tel][data-holo] .mo-toile { opacity: 0; }
 /* LA CARTE COUCHÉE : une fois retournée, elle bascule en arrière autour de son bord bas (vue presque de face), comme posée sur une
    table ; son liseré doré reste allumé : c'est l'émetteur. Elle ne garde qu'une fine bande en bas de l'écran. */
-.mo-scene[data-holo-tel] .moj-carte.active .moj-entree { perspective: 520px; perspective-origin: 50% 85%; }
-.mo-scene[data-holo-tel] .moj-carte.active .moj-survol { transform-origin: 50% 100%; }
-.mo-scene[data-holo-tel] .moj-carte.active.retournee .moj-survol { transform: scale(var(--cj-agrandi, 1.1)) rotateX(76deg);
+.mo-scene[data-holo-tel] .moj-carte .moj-entree { perspective: 520px; perspective-origin: 50% 85%; }
+.mo-scene[data-holo-tel] .moj-carte .moj-survol { transform-origin: 50% 100%; }
+.mo-scene[data-holo-tel] .moj-carte.retournee .moj-survol { transform: scale(var(--cj-agrandi, 1.1)) rotateX(76deg);
   transition: transform .3s cubic-bezier(.5, 0, .3, 1.15) .35s; }
 /* TEMPO (2026-10-22, « trop lent ») : sur téléphone, retournement en 0,35 s, puis bascule à plat en 0,3 s, sans pause (le dos du
    maillot se voit le temps de la bascule) ; l'hologramme s'allume quand la carte touche la table (650 ms, voir retourner) :
@@ -4723,7 +4723,7 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
 .mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-faisceau { transition-duration: .2s; }
 .mo-scene[data-holo-tel]:not([data-calme]) .moj-holo--fiche.visible .moj-holo-projection { animation: moj-holo-allumage .4s linear .1s both; }
 .mo-scene[data-holo-tel] .mob-bouton { animation-duration: .2s; animation-delay: calc(.1s + var(--rang, 0) * 40ms); }
-.mo-scene[data-holo-tel][data-holo] .moj-carte.active .moj-contour { opacity: 1; animation: none; }
+.mo-scene[data-holo-tel][data-holo] .moj-carte:is(.active, .sortante) .moj-contour { opacity: 1; animation: none; }
 .mo-scene[data-holo-tel] .moj-carte.active .moj-rappel { display: none; } /* illisible couchée : la carte reste touchable, « Retour » est à côté */
 /* Le faisceau part du milieu de la carte couchée ; les réglages fins de l'ordinateur (zoom, décalage) ne s'appliquent pas. */
 .mo-scene[data-holo-tel] .moj-holo--fiche { bottom: auto; height: var(--tel-socle-haut); transform: none; }
@@ -4737,26 +4737,25 @@ html[data-qualite="minimal"] .moj-curseur, html[data-qualite="minimal"] .moj-cur
    d'écart), suivent le doigt ; au lâcher, un ressort de 0,35 s les mène à leur place. Hors glissement, la voisine est cachée. */
 .mo-scene[data-holo-tel] .moj-holo--fiche .moj-voisine { visibility: hidden; }
 .mo-scene[data-holo-tel] .moj-holo--fiche.en-glisse .moj-voisine { visibility: visible; }
-/* LA RÉCOMPENSE (à la validation d'une glissade) : un reflet doré balaie la nouvelle bannière de gauche à droite (0,5 s), son
-   pseudo entre lettre par lettre (20 ms d'écart, 12 px + fondu, 0,25 s chacune), ses réseaux arrivent en rebond (40 ms d'écart) ;
-   le liseré de la carte couchée et le faisceau s'éclairent (+40 %, 0,3 s). Les couleurs viennent du thème. */
-.mo-scene[data-holo-tel] .moj-holo-projection.dopamine .mob-carte::after { content: ""; position: absolute; inset: 0; pointer-events: none; mix-blend-mode: screen;
-  background: linear-gradient(105deg, transparent 32%, color-mix(in srgb, var(--metal-sombre) 40%, transparent) 40%, color-mix(in srgb, var(--metal-clair) 70%, transparent) 47%,
-    var(--metal-reflet) 50%, color-mix(in srgb, var(--metal-clair) 70%, transparent) 53%, color-mix(in srgb, var(--metal-sombre) 40%, transparent) 60%, transparent 68%);
-  transform: translateX(-100%); animation: mob-reflet .5s cubic-bezier(.4, 0, .3, 1) forwards; }
-@keyframes mob-reflet { to { transform: translateX(100%); } }
+/* LA RÉCOMPENSE (à la validation d'une glissade) : le pseudo de la nouvelle bannière entre lettre par lettre (20 ms d'écart,
+   12 px + fondu, 0,25 s chacune), ses réseaux arrivent en rebond (40 ms d'écart). (Reflet doré et éclat du liseré retirés le
+   2026-10-22 à la demande de Duncan : ils faisaient « saut d'image ».) */
 .mob-lettre { display: inline-block; }
 .mo-scene[data-holo-tel] .moj-holo-projection.dopamine .mob-lettre { animation: mob-lettre .25s cubic-bezier(.2, .8, .3, 1) calc(var(--k, 0) * 20ms) both; }
 @keyframes mob-lettre { from { opacity: 0; transform: translateY(12px); } }
 .mo-scene[data-holo-tel] .moj-holo-projection.dopamine .mob-bouton { animation: mob-rebond .35s ease-out calc(var(--rang, 0) * 40ms) both; }
 @keyframes mob-rebond { 0% { opacity: 0; scale: .6; } 60% { opacity: 1; scale: 1.08; } 100% { opacity: 1; scale: 1; } }
-.mo-scene[data-holo-tel] .moj-holo--fiche.eclat :is(.moj-holo-faisceau, .moj-holo-source) { animation: moj-eclat .3s ease-out; }
-html:is([data-qualite="allege"], [data-qualite="minimal"]) .moj-holo-projection.dopamine .mob-carte::after { display: none; }
 html:is([data-qualite="allege"], [data-qualite="minimal"]) .moj-holo-projection.dopamine .mob-lettre { animation: none; }
-/* Pendant le pivot, les cartes changent sans animation (la nouvelle arrive déjà couchée) ; son liseré lance juste un éclat. */
-.mo-scene[data-pivot] .moj-carte, .mo-scene[data-pivot] .moj-carte * { transition: none !important; }
-.mo-scene[data-holo-tel][data-holo] .moj-carte.active.eclat .moj-contour { animation: moj-eclat .3s ease-out; }
-@keyframes moj-eclat { 0% { filter: brightness(1.4); } 100% { filter: none; } }
+/* LA CARTE COUCHÉE CHANGE DE JOUEUR (glissade validée) : fondu enchaîné de 0,2 s. La nouvelle carte arrive déjà retournée et
+   couchée (« sans-transition » : rien ne bouge en elle) et apparaît par-dessus ; l'ancienne reste telle quelle dessous, puis
+   disparaît d'un coup une fois recouverte (« sortante »). Aucun saut de forme ni de lumière. */
+.mo-scene[data-holo-tel] .moj-carte.sans-transition * { transition: none !important; }
+.mo-scene[data-holo-tel] .moj-carte.active { transition: transform .6s cubic-bezier(.2, .9, .25, 1), opacity .2s ease-out; }
+.mo-scene[data-holo-tel] .moj-carte.sortante { transition: opacity 0s .2s; }
+/* Le faisceau ne scintille plus sur téléphone : ses baisses de lumière en marches ressemblaient à des saccades. */
+.mo-scene[data-holo-tel] .moj-holo--fiche.visible .moj-holo-faisceau { animation: none; }
+/* Les réseaux de la bannière voisine sont déjà allumés pendant le glissement (sans leur clignotement d'allumage). */
+.mo-scene[data-holo-tel] .moj-voisine .mob-bouton { animation: none; opacity: 1; }
 /* Lisibilité : le texte reste net (pas de tremblement), les lignes de balayage seulement sur la photo. */
 .mo-scene[data-holo-tel] .moj-holo--fiche .moj-holo-lignes { display: none; }
 .mo-scene[data-holo-tel] .moj-holo--fiche.visible .moj-holo-tremble { animation: none; }
@@ -6412,7 +6411,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         if (holoTel) {
           x = 0;
           y = ySocle;
-          echelle = i === actif ? sSocle : sSocle * 0.9;
+          echelle = sSocle;
           z = i === actif ? 50 : 45;
         } else if (actif < 0) {
           if (etroit) {
@@ -7093,15 +7092,24 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
     function validerGlissade(sens, duree) {
       const i = (actif + sens + N) % N;
       clearTimeout(minuterieRetournement);
-      scene.dataset.pivot = ''; // (les cartes changent sans transition : la nouvelle arrive déjà couchée)
-      cartes[actif].classList.remove('retournee', 'eclat');
-      flottes[actif].classList.remove('flotte');
-      actif = i;
-      cartes[i].classList.add('retournee');
+      // La carte couchée : fondu enchaîné de 0,2 s (voir le CSS « LA CARTE COUCHÉE CHANGE DE JOUEUR »).
+      const ancienne = cartes[actif], nouvelle = cartes[i], flotteAncienne = flottes[actif];
+      ancienne.classList.add('sans-transition', 'sortante');
+      nouvelle.classList.add('sans-transition', 'retournee');
+      nouvelle.classList.remove('sortante');
       if (r.flottementCarte > 0) flottes[i].classList.add('flotte');
+      actif = i;
       placerCartes();
-      void scene.offsetWidth; // le navigateur applique ces changements avant qu'on rétablisse les transitions
-      delete scene.dataset.pivot;
+      void nouvelle.offsetWidth; // la nouvelle est retournée et couchée avant de réapparaître
+      nouvelle.classList.remove('sans-transition');
+      setTimeout(() => { // l'ancienne, recouverte, reprend sa face avant (elle est cachée) ; sauf si on est déjà revenu à elle
+        ancienne.classList.remove('sortante');
+        if (ancienne === cartes[actif]) return;
+        ancienne.classList.remove('retournee');
+        flotteAncienne.classList.remove('flotte');
+        void ancienne.offsetWidth;
+        ancienne.classList.remove('sans-transition');
+      }, 250);
       holoCarte = i;
       defilementChoix = defilement.scrollTop;
       recompenser();
@@ -7122,8 +7130,8 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
       void holo.offsetWidth; // la voisine est posée à côté avant de glisser
       validerGlissade(sens, 0.35);
     }
-    // LA RÉCOMPENSE (« dopamine », à la validation) : vibration courte (Android), reflet doré sur la nouvelle bannière, pseudo lettre
-    // par lettre, réseaux en rebond, liseré de la carte et faisceau qui s'éclairent (voir le CSS « LA RÉCOMPENSE »).
+    // LA RÉCOMPENSE (« dopamine », à la validation) : vibration courte (Android), pseudo lettre par lettre, réseaux en rebond
+    // (voir le CSS « LA RÉCOMPENSE »).
     function recompenser() {
       if (navigator.vibrate) navigator.vibrate(12);
       const pseudo = projVoisine.querySelector('.mob-pseudo');
@@ -7137,11 +7145,9 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .mo-barre-actions { -
         });
         pseudo.replaceChildren(...lettres);
       }
-      for (const [el, classe] of [[projVoisine, 'dopamine'], [holo, 'eclat'], [cartes[actif], 'eclat']]) {
-        el.classList.remove(classe); void el.offsetWidth; el.classList.add(classe);
-      }
-      const carte = cartes[actif];
-      setTimeout(() => { holo.classList.remove('eclat'); carte.classList.remove('eclat'); }, 320);
+      projVoisine.classList.remove('dopamine');
+      void projVoisine.offsetWidth; // pour rejouer la récompense à chaque glissade
+      projVoisine.classList.add('dopamine');
     }
     // L'APERÇU (incitation, tant que le visiteur n'a pas glissé) : avec le doigt de la démonstration, la bannière part de 40 px vers
     // la gauche en montrant le bord de la suivante, puis revient avec le ressort.
