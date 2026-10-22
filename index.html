@@ -1408,13 +1408,15 @@ html[data-qualite="minimal"] .sdj-curseur, html[data-qualite="minimal"] .sdj-cur
 .sd-recrue-tete .sd-intro { padding-bottom: .3em; color: color-mix(in srgb, var(--couleur-texte) 88%, transparent); }
 .sd-postes { border-top: 1px solid color-mix(in srgb, var(--couleur-texte) 30%, transparent); }
 .sd-postes > :nth-child(2) { --k: 1; } .sd-postes > :nth-child(3) { --k: 2; } .sd-postes > :nth-child(4) { --k: 3; }
-.sd-poste { position: relative; isolation: isolate; overflow: hidden; display: grid; grid-template-columns: 52px minmax(0, 1fr) minmax(0, 330px) 170px; align-items: center; gap: 10px 28px;
-  padding: 26px 18px; text-decoration: none; color: var(--couleur-texte); border-bottom: 1px solid color-mix(in srgb, var(--couleur-texte) 30%, transparent); transition: color .3s; }
-/* Au survol, la ligne se remplit de métal de gauche à droite (seul transform change). */
-.sd-poste::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: scaleX(0); transform-origin: 0 50%; transition: transform .5s cubic-bezier(.2, .8, .2, 1);
+.sd-poste { border-bottom: 1px solid color-mix(in srgb, var(--couleur-texte) 30%, transparent); }
+.sd-poste-tete { position: relative; isolation: isolate; overflow: hidden; width: 100%; box-sizing: border-box; display: grid; grid-template-columns: 52px minmax(0, 1fr) minmax(0, 330px) 170px; align-items: center; gap: 10px 28px;
+  padding: 26px 18px; border: 0; margin: 0; cursor: pointer; font: inherit; text-align: left; color: var(--couleur-texte); background: none; transition: color .3s; }
+.sd-poste-tete:focus-visible { outline: 2px solid var(--metal-clair); outline-offset: -2px; }
+/* Au survol (aperçu) comme une fois ouvert (persistant), la ligne se remplit de métal de gauche à droite (seul transform change). */
+.sd-poste-tete::before { content: ""; position: absolute; inset: 0; z-index: -1; transform: scaleX(0); transform-origin: 0 50%; transition: transform .5s cubic-bezier(.2, .8, .2, 1);
   background: linear-gradient(180deg, var(--metal-clair), var(--metal-moyen) 70%, color-mix(in srgb, var(--metal-moyen) 70%, var(--metal-sombre))); }
-.sd-poste:hover, .sd-poste:focus-visible { color: var(--couleur-nuit); }
-.sd-poste:hover::before, .sd-poste:focus-visible::before { transform: none; }
+.sd-poste-tete:hover, .sd-poste-tete:focus-visible, .sd-poste.ouvert > .sd-poste-tete { color: var(--couleur-nuit); }
+.sd-poste-tete:hover::before, .sd-poste-tete:focus-visible::before, .sd-poste.ouvert > .sd-poste-tete::before { transform: none; }
 .sd-poste-num { font: 800 19px/1 var(--police-titre, sans-serif); letter-spacing: .04em; color: var(--metal-clair); transition: color .3s; }
 .sd-poste-nom { font: 900 clamp(36px, 4.6vw, 70px)/.95 var(--police-titre, sans-serif); text-transform: uppercase; letter-spacing: .01em; transition: letter-spacing .5s cubic-bezier(.2, .8, .2, 1); }
 .sd-poste-texte { font: 400 18px/1.5 var(--sd-police-texte); opacity: .84; }
@@ -1422,11 +1424,28 @@ html[data-qualite="minimal"] .sdj-curseur, html[data-qualite="minimal"] .sdj-cur
 .sd-pastille { padding: 9px 15px; border-radius: 999px; font: 800 17px/1 var(--police-titre, sans-serif); font-style: normal; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 60%, transparent); transition: background .3s, color .3s; }
 .sd-pastille--ouvert { color: var(--couleur-nuit); box-shadow: none; background: linear-gradient(180deg, var(--metal-clair), var(--metal-moyen) 70%, color-mix(in srgb, var(--metal-moyen) 70%, var(--metal-sombre))); }
-.sd-poste-fleche { font: 400 28px/1 var(--sd-police-texte); opacity: .5; transform: translateX(-6px); transition: transform .4s cubic-bezier(.3, 1.6, .5, 1), opacity .3s; }
-.sd-poste:hover .sd-poste-num { color: var(--couleur-nuit); }
-.sd-poste:hover .sd-poste-nom { letter-spacing: .04em; }
-.sd-poste:hover .sd-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
-.sd-poste:hover .sd-poste-fleche { opacity: 1; transform: translateX(4px); }
+.sd-poste-chevron { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--metal-moyen); transition: transform .4s cubic-bezier(.3, 1.4, .5, 1), box-shadow .25s; }
+.sd-poste-chevron::before { content: ""; width: 8px; height: 8px; margin-top: -4px; border-right: 2px solid var(--metal-clair); border-bottom: 2px solid var(--metal-clair); transform: rotate(45deg); }
+.sd-poste-tete:is(:hover, :focus-visible) .sd-poste-num, .sd-poste.ouvert > .sd-poste-tete .sd-poste-num { color: var(--couleur-nuit); }
+.sd-poste-tete:hover .sd-poste-nom { letter-spacing: .04em; }
+.sd-poste-tete:is(:hover, :focus-visible) .sd-pastille--ouvert, .sd-poste.ouvert > .sd-poste-tete .sd-pastille--ouvert { color: var(--metal-clair); background: var(--couleur-nuit); }
+.sd-poste-tete:is(:hover, :focus-visible) .sd-poste-chevron, .sd-poste.ouvert > .sd-poste-tete .sd-poste-chevron { box-shadow: inset 0 0 0 1.5px var(--couleur-nuit); }
+.sd-poste-tete:is(:hover, :focus-visible) .sd-poste-chevron::before, .sd-poste.ouvert > .sd-poste-tete .sd-poste-chevron::before { border-color: var(--couleur-nuit); }
+/* L'accordéon (comme le téléphone) : la hauteur s'ouvre en douceur (grille 0fr → 1fr, 0,45 s), le chevron se retourne.
+   Sur ordinateur, le détail se range en trois colonnes sous le nom : missions, profil, puis rythme et candidature. */
+.sd-poste-detail { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .45s cubic-bezier(.2, .8, .2, 1); }
+.sd-poste-detail > div { overflow: hidden; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 18px 40px; padding: 0 18px 0 98px; visibility: hidden;
+  transition: padding .45s cubic-bezier(.2, .8, .2, 1), visibility 0s .45s; }
+.sd-poste-detail .sd-poste-bloc { grid-row: span 2; }
+.sd-poste.ouvert .sd-poste-detail { grid-template-rows: 1fr; }
+.sd-poste.ouvert .sd-poste-detail > div { padding-top: 30px; padding-bottom: 36px; visibility: visible; transition-delay: 0s; }
+.sd-poste.ouvert .sd-poste-chevron { transform: rotate(180deg); }
+.sd-poste-bloc small, .sd-poste-rythme small { display: block; margin-bottom: 8px; font: 700 12px/1 var(--sd-police-texte); letter-spacing: .16em; text-transform: uppercase; color: var(--metal-moyen); }
+.sd-poste-bloc ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.sd-poste-bloc li { position: relative; padding-left: 20px; font: 400 16px/1.5 var(--sd-police-texte); color: color-mix(in srgb, var(--couleur-texte) 88%, transparent); }
+.sd-poste-bloc li::before { content: ""; position: absolute; left: 2px; top: .62em; width: 7px; height: 7px; transform: rotate(45deg); background: var(--metal-moyen); }
+.sd-poste-rythme { margin: 0; font: 500 16px/1.5 var(--sd-police-texte); color: var(--couleur-texte); }
+.sd-poste-candidater { justify-self: start; }
 .sd-parcours-titre { margin: clamp(72px, 11vh, 120px) 0 0; font: 500 clamp(22px, 2vw, 27px)/1.2 var(--sd-police-texte); color: var(--metal-clair); }
 .sd-parcours { margin: 22px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(20px, 3vw, 48px); }
 .sd-parcours li { position: relative; display: grid; align-content: start; gap: 10px; padding-top: 18px; border-top: 2px solid color-mix(in srgb, var(--couleur-texte) 30%, transparent); }
@@ -1447,7 +1466,9 @@ html[data-qualite="minimal"] .sdj-curseur, html[data-qualite="minimal"] .sdj-cur
 .sd-recrue .sd-note { color: color-mix(in srgb, var(--couleur-texte) 66%, transparent); }
 @container (max-width: 820px) {
   .sd-recrue-tete { grid-template-columns: 1fr; }
-  .sd-poste { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "num statut" "nom nom" "texte texte"; padding: 22px 10px; }
+  .sd-poste-tete { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "num statut" "nom nom" "texte texte"; padding: 22px 10px; }
+  .sd-poste-detail > div { grid-template-columns: 1fr; padding-left: 10px; padding-right: 10px; }
+  .sd-poste-detail .sd-poste-bloc { grid-row: auto; }
   .sd-poste-num { grid-area: num; } .sd-poste-nom { grid-area: nom; } .sd-poste-texte { grid-area: texte; } .sd-poste-statut { grid-area: statut; }
   .sd-parcours { grid-template-columns: 1fr; gap: 28px; }
   .sd-parcours li { grid-template-columns: 62px minmax(0, 1fr); column-gap: 14px; }
@@ -1466,7 +1487,7 @@ html[data-qualite="minimal"] .sdj-curseur, html[data-qualite="minimal"] .sdj-cur
   font: 800 18px/1 var(--police-titre, sans-serif); letter-spacing: .12em; text-transform: uppercase; color: color-mix(in srgb, var(--couleur-texte) 55%, transparent); }
 .sd-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 @container (max-width: 820px) { .sd-atouts { grid-template-columns: 1fr; } .sd-emplacements { grid-template-columns: 1fr 1fr; } }
-.sd-scene[data-calme] .sd-poste, .sd-scene[data-calme] .sd-poste *, .sd-scene[data-calme] .sd-poste::before, .sd-scene[data-calme] .sd-parcours-num { transition: none; }
+.sd-scene[data-calme] .sd-poste, .sd-scene[data-calme] .sd-poste *, .sd-scene[data-calme] .sd-poste *::before, .sd-scene[data-calme] .sd-parcours-num { transition: none; }
 
 /* ---- Le grand appel Discord, puis le pied de page ---- */
 .sd-final { position: relative; display: grid; justify-items: center; gap: 22px; padding: clamp(56px, 9vw, 110px) clamp(20px, 5vw, 60px); border-radius: 28px; text-align: center; overflow: hidden;
@@ -1629,11 +1650,11 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
 /* Boutons et postes : « la lumière suit le doigt » (Duncan, 2026-10-21, remplace l'éclat qui traversait) : au repos rien ne brille ;
    au survol, une tache de lumière douce se pose sous le curseur et le suit (--mx / --my posés par le code). Ils s'enfoncent au clic. */
 .sd-bouton, .sd-nav-cta { position: relative; overflow: hidden; isolation: isolate; }
-.sd-bouton::after, .sd-poste::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s;
+.sd-bouton::after, .sd-poste-tete::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity .35s;
   background: radial-gradient(140px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 75%, transparent), transparent 70%); }
 .sd-bouton--contour::after { background: radial-gradient(140px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 20%, transparent), transparent 70%); }
-.sd-poste::after { background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 70%, transparent), transparent 70%); }
-.sd-bouton:hover::after, .sd-poste:hover::after { opacity: 1; }
+.sd-poste-tete::after { background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--metal-reflet) 70%, transparent), transparent 70%); }
+.sd-bouton:hover::after, .sd-poste-tete:hover::after { opacity: 1; }
 .sd-bouton:active, .sd-nav-cta:active { transform: scale(.95); transition-duration: .08s; }
 .sd-bouton svg { transition: transform .45s cubic-bezier(.3, 1.8, .5, 1); }
 .sd-bouton:hover svg { transform: rotate(-12deg) scale(1.2); }
@@ -1699,7 +1720,7 @@ html[data-qualite="minimal"] .sd-accueil .sd-mot { animation: none; }
 .sd-scene[data-calme] .sd-accueil-contenu { transform: none; opacity: 1; }
 .sd-scene[data-calme] .sd-accueil .sd-logo { animation: none; }
 .sd-scene[data-calme] .sd-revele, .sd-scene[data-calme] .sd-lumiere, .sd-scene[data-calme] .sd-lumiere:hover { transform: none; transition: none; }
-.sd-scene[data-calme] .sd-bouton::after, .sd-scene[data-calme] .sd-poste::after { display: none; }
+.sd-scene[data-calme] .sd-bouton::after, .sd-scene[data-calme] .sd-poste-tete::after { display: none; }
 /* BOUTONS DISCORD (Duncan, 2026-10-21) : en « verre liquide » teinté du violet de Discord, pour qu'on reconnaisse la
    destination d'un coup d'œil. Le violet est celui de la marque Discord, pas du thème (un thème peut le changer avec --couleur-discord).
    Verre qui floute ce qui passe derrière, bord clair en haut, lueur douce dans la moitié haute ; pas d'éclat qui traverse. */
@@ -1989,6 +2010,25 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .sd-bouton--discord {
       ? '<a class="' + classe + '" href="' + adresse + '" target="_blank" rel="noopener"' + (etiquette ? ' aria-label="' + etiquette + '"' : '') + '>' + contenu + '</a>'
       : '<a class="' + classe + '" href="#" data-bientot title="Lien à venir"' + (etiquette ? ' aria-label="' + etiquette + ' (lien à venir)"' : '') + '>' + contenu + '</a>';
     const liens = this.liensClub;
+    // Les postes du recrutement, mêmes textes que la version téléphone. MAQUETTE : missions, profils et rythmes INVENTÉS (2026-10-21), à confirmer avec le club.
+    const POSTES = [
+      { nom: 'Joueur remplaçant', texte: 'Tous rôles, pour les pracs et les absences en saison.', statut: 'Ouvert',
+        missions: ['Jouer les pracs de la semaine avec les titulaires.', 'Remplacer un titulaire en match Premier, au pied levé.', 'Maîtriser deux rôles et les cartes de l\'acte en cours.'],
+        profil: ['Ascendant 3 ou plus, en progression.', 'Micro, calme en communication, à l\'écoute du capitaine.', '16 ans minimum.'],
+        rythme: 'Trois soirs par semaine (pracs mardi et jeudi, matchs le samedi).' },
+      { nom: 'Coach · analyste', texte: 'Revue des matchs, préparation des cartes de la semaine.', statut: 'Ouvert',
+        missions: ['Revoir les matchs du samedi et en tirer trois points de travail.', 'Préparer la carte de la semaine : placements, stratégies adverses.', 'Animer le débrief de 30 minutes avant chaque prac.'],
+        profil: ['Très bonne lecture du jeu ; un passé Immortel est un plus.', 'Pédagogue : on explique, on ne crie pas.', 'À l\'aise avec les outils de revue (tracker, VOD).'],
+        rythme: 'Deux soirs par semaine, plus les matchs du samedi.' },
+      { nom: 'Créateur de contenu', texte: 'Clips, montages, couverture des LAN.', statut: 'Ouvert',
+        missions: ['Sortir les meilleures actions de chaque match sur TikTok et X.', 'Monter un récap de la semaine, en une minute.', 'Couvrir la LAN de Draguignan : coulisses, réactions, photos.'],
+        profil: ['Maîtrise d\'un logiciel de montage (Premiere, CapCut, DaVinci…).', 'Sens du rythme et des formats courts.', 'Connaît la scène Valorant et son vocabulaire.'],
+        rythme: 'Souple : un récap par semaine et les jours de match.' },
+      { nom: 'Graphiste', texte: 'Annonces de match, visuels des réseaux.', statut: 'Bénévole',
+        missions: ['Créer les affiches de match, de la W1 à la W7.', 'Publier les résultats en visuel le samedi soir.', 'Tenir à jour le kit des réseaux (bannières, avatars).'],
+        profil: ['Photoshop, Illustrator ou Figma.', 'Respecte la direction artistique du club : or et violet.', 'Un portfolio, même court.'],
+        rythme: 'Deux à trois visuels par semaine, préparés à l\'avance.' }
+    ];
     const iconeTrait = nom => '<svg viewBox="0 0 24 24" aria-hidden="true">' + iconesFace[nom] + '</svg>';
     // LE LOGO : le mim, détouré largement autour de l'étoile arabe (masque, 1,35 fois l'étoile), l'étoile pleine percée
     // d'un petit rond au centre. Le cercle invisible marque le cœur : le portail s'y repère (sa position à l'écran).
@@ -2080,15 +2120,25 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .sd-bouton--discord {
       // LE MOT QUI RECULE (entre 04 et 05) : la page s'arrête sur un mot géant, qui recule jusqu'à sa taille et se remplit de métal.
       '<div class="sd-recul" aria-hidden="true"><div class="sd-recul-scene"><p class="sd-recul-mot"><span class="sd-recul-trait">On recrute</span><span class="sd-recul-plein">On recrute</span></p></div></div>' +
       // RECRUTEMENT (DA, 2026-10-21) : une affiche de casting sur fond violet. Les postes en très grandes lettres (chaque ligne
-      // mène à la candidature), puis le parcours en trois temps aux chiffres géants, puis l'appel.
+      // se déplie sur ses détails et la candidature), puis le parcours en trois temps aux chiffres géants, puis l'appel.
       '<section class="sd-section sd-recrue" data-section="recrutement"><div class="sd-cadre">' +
         '<header class="sd-entete sd-recrue-tete sd-revele"><p class="sd-sur-titre"><b>05</b>Recrutement · saison 2026-27</p><h2 class="sd-titre">Rejoindre<br>MANSUR</h2>' +
           '<p class="sd-intro">Le club grandit. Joueurs, staff ou créateurs : si tu veux porter le maillot, choisis ton poste et candidate en trois temps.</p></header>' +
+        // ACCORDÉON (repris du téléphone, 2026-10-22) : cliquer un poste déplie ses détails ; la candidature est dans le détail.
         '<div class="sd-postes">' +
-          [['Joueur remplaçant', 'Tous rôles, pour les pracs et les absences en saison.', 'Ouvert'], ['Coach · analyste', 'Revue des matchs, préparation des cartes de la semaine.', 'Ouvert'],
-           ['Créateur de contenu', 'Clips, montages, couverture des LAN.', 'Ouvert'], ['Graphiste', 'Annonces de match, visuels des réseaux.', 'Bénévole']]
-            .map(([b, s, i], k) => lienClub(liens.discord, 'sd-poste sd-revele', '<span class="sd-poste-num">0' + (k + 1) + '</span><b class="sd-poste-nom">' + b + '</b><span class="sd-poste-texte">' + s + '</span>' +
-              '<span class="sd-poste-statut"><i class="sd-pastille' + (i === 'Ouvert' ? ' sd-pastille--ouvert' : '') + '">' + i + '</i><span class="sd-poste-fleche" aria-hidden="true">→</span></span>', 'Candidater : ' + b)).join('') +
+          POSTES.map((p, k) =>
+            '<div class="sd-poste sd-revele">' +
+              '<button type="button" class="sd-poste-tete" aria-expanded="false" aria-controls="sd-poste-' + k + '">' +
+                '<span class="sd-poste-num">0' + (k + 1) + '</span><b class="sd-poste-nom">' + p.nom + '</b><span class="sd-poste-texte">' + p.texte + '</span>' +
+                '<span class="sd-poste-statut"><i class="sd-pastille' + (p.statut === 'Ouvert' ? ' sd-pastille--ouvert' : '') + '">' + p.statut + '</i><span class="sd-poste-chevron" aria-hidden="true"></span></span>' +
+              '</button>' +
+              '<div class="sd-poste-detail" id="sd-poste-' + k + '" role="region" aria-label="' + p.nom + '"><div>' +
+                '<div class="sd-poste-bloc"><small>Missions</small><ul>' + p.missions.map(m => '<li>' + m + '</li>').join('') + '</ul></div>' +
+                '<div class="sd-poste-bloc"><small>Profil</small><ul>' + p.profil.map(m => '<li>' + m + '</li>').join('') + '</ul></div>' +
+                '<p class="sd-poste-rythme"><small>Rythme</small>' + p.rythme + '</p>' +
+                lienClub(liens.discord, 'sd-bouton sd-poste-candidater', iconeTrait('discord') + 'Candidater sur Discord', 'Candidater : ' + p.nom) +
+              '</div></div>' +
+            '</div>').join('') +
         '</div>' +
         '<h3 class="sd-parcours-titre sd-revele">Candidater en trois temps</h3>' +
         '<ol class="sd-parcours">' +
@@ -3709,7 +3759,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .sd-bouton--discord {
     }
     // Le halo des cases « lumière » suit la souris (une seule case à la fois : celle qu'on survole).
     scene.addEventListener('pointermove', e => {
-      const caseLumiere = e.target.closest('.sd-lumiere, .sd-bouton, .sd-poste');
+      const caseLumiere = e.target.closest('.sd-lumiere, .sd-bouton, .sd-poste-tete');
       if (!caseLumiere) return;
       const b = caseLumiere.getBoundingClientRect();
       caseLumiere.style.setProperty('--mx', (e.clientX - b.left) + 'px');
@@ -3717,7 +3767,7 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .sd-bouton--discord {
     }, { passive: true });
     // La récompense du clic : 12 étincelles de métal jaillissent sous le doigt, puis disparaissent (0,7 s). Mode calme : rien.
     scene.addEventListener('pointerdown', e => {
-      if (calme || !e.target.closest('.sd-bouton, .sd-nav-cta, .sd-reseau, .sd-nav-lien, .sd-nav-tiroir-lien, .sd-poste, .sd-semaine')) return;
+      if (calme || !e.target.closest('.sd-bouton, .sd-nav-cta, .sd-reseau, .sd-nav-lien, .sd-nav-tiroir-lien, .sd-poste-tete, .sd-semaine')) return;
       const b = scene.getBoundingClientRect(), gerbe = document.createElement('span');
       gerbe.className = 'sd-gerbe';
       gerbe.style.left = (e.clientX - b.left) + 'px';
@@ -3731,6 +3781,13 @@ html:is([data-qualite="allege"], [data-qualite="minimal"]) .sd-bouton--discord {
       scene.appendChild(gerbe);
       setTimeout(() => gerbe.remove(), 700);
     }, { passive: true });
+    // L'accordéon des postes (comme le téléphone) : cliquer un en-tête ouvre son poste et referme les autres ; le recliquer le referme.
+    scene.querySelectorAll('.sd-poste-tete').forEach(tete => tete.addEventListener('click', () => {
+      const poste = tete.parentElement, ouvrir = !poste.classList.contains('ouvert');
+      scene.querySelectorAll('.sd-poste.ouvert').forEach(p => { p.classList.remove('ouvert'); p.firstElementChild.setAttribute('aria-expanded', 'false'); });
+      poste.classList.toggle('ouvert', ouvrir);
+      tete.setAttribute('aria-expanded', String(ouvrir));
+    }));
     scene.querySelectorAll('.sd-revele').forEach(el => observateurRevele.observe(el));
     miseEnPageNav();
     function arreterNav() { observateurVedette.disconnect(); observateurNav.disconnect(); observateurRevele.disconnect(); cancelAnimationFrame(idMiseEnPageNav); clearInterval(minuterieMatch); cancelAnimationFrame(idGlisse); cancelAnimationFrame(idPortail); cancelAnimationFrame(idHero); idHero = 0; cancelAnimationFrame(idMolette); minuteriesPret.forEach(clearTimeout); }
