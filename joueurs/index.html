@@ -218,6 +218,34 @@ html[data-fond="nuit"] :is(.sdj-photo, .moj-photo)::before { opacity: .8;
     radial-gradient(circle, var(--metal-reflet) 0 .9px, var(--metal-moyen) 1.4px, transparent 2.4px) 25px 7px / 61px 53px;
   -webkit-mask: linear-gradient(#000 0 55%, transparent 85%); mask: linear-gradient(#000 0 55%, transparent 85%); }
 
+/* HOLO ON/OFF (2026-11-12): "off" shows the player cutout in true colours inside the projected banner,
+   while the hologram stays on the backdrop (tint, scanlines, flicker and tremble of the whole projection). */
+html[data-holo="off"] .sdb-photo img { filter: none; }
+/* the colour tint goes behind the cutout: .sdb-photo isolates, so it only tints the photo backdrop */
+html[data-holo="off"] .sdb-teinte { z-index: -1; }
+/* scanlines: removed from the top layer, redrawn under the cutout (photo backdrop) and on the rest of the banner */
+html[data-holo="off"] .sdj-holo--fiche .sdj-holo-lignes { display: none; }
+html[data-holo="off"] :is(.sdb-photo, .sdb-carte)::after { content: ""; position: absolute; inset: -8px 0 0; z-index: -1; pointer-events: none;
+  opacity: var(--holo-lignes, .55); background: repeating-linear-gradient(0deg, var(--couleur-nuit) 0 2px, transparent 2px 5px);
+  animation: sdj-holo-lignes .9s linear infinite; }
+html[data-holo="off"] .sdb-carte { isolation: isolate; }
+html[data-holo="off"] .sd-scene[data-calme] :is(.sdb-photo, .sdb-carte)::after { animation: none; }
+
+/* the toggle, in place of the Discord button of the site menu (and in the burger drawer) */
+.sd-nav-principal .sd-nav-cta { display: none !important; }
+.fonds-holo { display: inline-flex; align-items: center; gap: .55em; min-height: 44px; padding: 0 1.1em; border-radius: 999px; cursor: pointer;
+  font-family: inherit; font-weight: 800; font-size: 15px; line-height: 1; text-transform: uppercase; letter-spacing: .06em; white-space: nowrap;
+  color: var(--couleur-texte, #F4EFE6); background: transparent; border: 1.5px solid color-mix(in srgb, var(--metal-moyen) 70%, transparent); }
+.fonds-holo i { width: 2.1em; height: 1.15em; border-radius: 999px; position: relative; background: color-mix(in srgb, var(--couleur-texte, #fff) 18%, transparent); transition: background .25s; }
+.fonds-holo i::after { content: ""; position: absolute; top: .15em; left: .15em; width: .85em; height: .85em; border-radius: 50%; background: var(--couleur-texte, #fff); transition: transform .25s; }
+.fonds-holo[aria-pressed="true"] i { background: linear-gradient(135deg, var(--metal-sombre), var(--metal-reflet) 45%, var(--metal-clair) 60%, var(--metal-moyen)); }
+.fonds-holo[aria-pressed="true"] i::after { transform: translateX(.95em); background: var(--couleur-nuit); }
+.fonds-holo:focus-visible { outline: 2px solid var(--metal-clair); outline-offset: 3px; }
+.sd-nav-principal > .fonds-holo { margin-left: auto; }
+[data-etroit="oui"] .sd-nav-principal > .fonds-holo { display: none; }
+.sd-nav-tiroir > .fonds-holo { margin-top: .8em; }
+@media (prefers-reduced-motion: reduce) { .fonds-holo i, .fonds-holo i::after { transition: none; } }
+
 </style>
 </head>
 <body>
@@ -8247,6 +8275,41 @@ enregistrerEffet(EffetSiteMansurMobile);
   document.documentElement.dataset.fond = FONDS.includes(initial) ? initial : 'defaut';
   maj();
   new MutationObserver(() => { if (document.querySelector('a[data-fond]:not([data-fond-pret])')) { document.querySelectorAll('a[data-fond]').forEach(a => a.dataset.fondPret = ''); maj(); } })
+    .observe(document.body, { childList: true, subtree: true });
+})();
+
+// HOLO ON/OFF: hologram effect on the player cutout of the projected banner (the backdrop keeps it either way).
+(() => {
+  const racine = document.documentElement;
+  let etat = 'on';
+  try { etat = new URLSearchParams(location.search).get('holo') || localStorage.getItem('mansur-holo') || 'on'; } catch (e) {}
+  const appliquer = v => {
+    racine.dataset.holo = v === 'off' ? 'off' : 'on';
+    document.querySelectorAll('.fonds-holo').forEach(b => b.setAttribute('aria-pressed', String(racine.dataset.holo === 'on')));
+    try { localStorage.setItem('mansur-holo', racine.dataset.holo); } catch (e) {}
+  };
+  const bouton = () => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'fonds-holo';
+    b.innerHTML = '<i aria-hidden="true"></i>Holo photo';
+    b.title = "Effet hologramme sur le détourage du joueur";
+    return b;
+  };
+  const injecter = () => {
+    const principal = document.querySelector('.sd-nav-principal');
+    if (principal && !principal.querySelector(':scope > .fonds-holo')) principal.insertBefore(bouton(), principal.querySelector('.sd-nav-burger'));
+    const tiroir = document.querySelector('.sd-nav-tiroir');
+    if (tiroir && !tiroir.querySelector('.fonds-holo')) tiroir.appendChild(bouton());
+    appliquer(racine.dataset.holo);
+  };
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.fonds-holo')) return;
+    e.preventDefault(); e.stopPropagation();
+    appliquer(racine.dataset.holo === 'on' ? 'off' : 'on');
+  }, true);
+  racine.dataset.holo = etat === 'off' ? 'off' : 'on';
+  injecter();
+  new MutationObserver(() => { if (document.querySelector('.sd-nav-principal:not(:has(> .fonds-holo))')) injecter(); })
     .observe(document.body, { childList: true, subtree: true });
 })();
 
